@@ -369,7 +369,7 @@ function renderLearnContent(d) {
     const en = k.split(/[→＋]/)[0].replace(/[^\x00-\x7F]/g,'').trim();
     return `<div class="learn-kw-item">
       <span class="learn-kw-text">${esc(k)}</span>
-      ${en.length > 2 ? `<button class="speak-btn-sm" onclick="speak(${JSON.stringify(en)})">🔊</button>` : ''}
+      ${en.length > 2 ? `<button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${esc(en)}">🔊</button>` : ''}
     </div>`;
   }).join('');
 
@@ -380,11 +380,11 @@ function renderLearnContent(d) {
       <div class="learn-practice-body">
         <div class="learn-practice-q">
           ${esc(p.q)}
-          <button class="speak-btn-sm" onclick="speak(${JSON.stringify(p.q)})">🔊</button>
+          <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${esc(p.q)}">🔊</button>
         </div>
         <div class="learn-practice-a">
           → ${esc(p.a)}
-          <button class="speak-btn-sm" onclick="speak(${JSON.stringify(p.a)})">🔊</button>
+          <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${esc(p.a)}">🔊</button>
         </div>
         ${p.note ? `<div class="learn-practice-note">${esc(p.note)}</div>` : ''}
       </div>
@@ -428,4 +428,10 @@ function renderLearnContent(d) {
       <div class="learn-traps">${trapsHTML}</div>
     </div>` : ''}
   `;
+}
+
+// ── 學習區朗讀輔助（避免 JSON.stringify 在 onclick 屬性中的引號問題）──
+function learnSpeak(btn) {
+  const text = btn.getAttribute('data-text');
+  if (text && window.speak) speak(text);
 }

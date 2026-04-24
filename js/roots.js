@@ -99,7 +99,7 @@ function showRoot(id) {
         <div class="root-word-row">
           <div class="rw-word">
             ${hlWord(w.w, w.hl, cat.color)}
-            <button class="speak-btn-sm" onclick="speak('${w.w}')">🔊</button>
+            <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${w.w}">🔊</button>
           </div>
           <div class="rw-meaning">${esc(w.meaning)}</div>
         </div>`).join('')}
@@ -167,7 +167,7 @@ function rfcShow() {
   document.getElementById('rfcWordlistBody').innerHTML = r.words.map(w=>`
     <div class="rfc-wordlist-row">
       <span class="rfc-wl-word">${hlWord(w.w,w.hl,cat.color)}
-        <button class="speak-btn-sm" onclick="speak('${w.w}')">🔊</button>
+        <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${w.w}">🔊</button>
       </span>
       <span class="rfc-wl-meaning">${esc(w.meaning)}</span>
     </div>`).join('');
