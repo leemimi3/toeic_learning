@@ -121,3 +121,32 @@ function renderNotes() {
       </div>
     </div>`).join('');
 }
+
+// ── 朗讀筆記內容（練習聽力用）──
+function speakNoteBody(slow = false) {
+  const text = document.getElementById('n-body').value.trim();
+  if (!text) { return; }
+
+  // 只取英文句子（過濾掉中文和特殊符號）
+  const enOnly = text
+    .split('\n')
+    .map(line => line.replace(/[^\x00-\x7F]/g, ' ').trim()) // 移除中文
+    .filter(line => line.length > 3)                         // 過濾太短的行
+    .join('. ');
+
+  if (!enOnly.trim()) {
+    alert('沒有找到英文內容可以朗讀');
+    return;
+  }
+
+  if (!window.speechSynthesis) { alert('您的瀏覽器不支援朗讀功能'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(enOnly);
+  u.lang  = 'en-US';
+  u.rate  = slow ? 0.7 : 1.0;
+  const voices = speechSynthesis.getVoices();
+  const voice  = voices.find(v => v.lang === 'en-US' && v.name.includes('Google'))
+               || voices.find(v => v.lang === 'en-US');
+  if (voice) u.voice = voice;
+  speechSynthesis.speak(u);
+}

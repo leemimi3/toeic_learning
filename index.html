@@ -393,7 +393,19 @@
         </div>
       </div>
       <div class="form-group"><label class="form-label">標題 *</label><input class="inp" id="n-title" placeholder="例：分詞構句、NOT question技巧…"></div>
-      <div class="form-group"><label class="form-label">內容</label><textarea class="inp" id="n-body" placeholder="考點、錯誤原因、正確答案…"></textarea></div>
+      <div class="form-group">
+        <label class="form-label">內容 / 例句</label>
+        <textarea class="inp" id="n-body" placeholder="考點、錯誤原因、正確答案…&#10;也可以直接貼入英文例句，點下方按鈕朗讀練習聽力"></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="speakNoteBody()" style="color:var(--blue);border-color:var(--blue)">
+            🔊 朗讀內容
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="speakNoteBody(true)">
+            🐢 慢速朗讀
+          </button>
+          <span style="font-family:var(--font-mono);font-size:.62rem;color:var(--muted);align-self:center">可用於練習聽力</span>
+        </div>
+      </div>
       <div class="form-group"><label class="form-label">記憶技巧</label><input class="inp" id="n-tip" placeholder="個人筆記、聯想…"></div>
       <div class="form-group">
         <label class="form-label">難度</label>
@@ -435,7 +447,7 @@
       <!-- 方案二：Google Sheets -->
       <div class="backup-section">
         <div class="backup-section-title">📊 方案二：Google Sheets 同步</div>
-        <div class="backup-section-desc">資料自動備份到你的 Google 試算表，換裝置也能還原。</div>
+        <div class="backup-section-desc">資料自動備份到你的 Google 試算表。<strong style="color:var(--green)">換裝置開網站時會自動偵測並還原</strong>，不需要手動操作。</div>
 
         <div class="backup-howto">
           <div class="howto-title">⚙ 設定步驟（只需做一次）</div>

@@ -149,16 +149,14 @@ function setSyncStatus(state, time) {
   el.className    = 'sync-status ' + s.cls;
 }
 
-// 自動同步 hook：每次 persist() 後若啟用則自動推送
-const _origPersist = persist;
-function persist() {
-  _origPersist();
+// 自動同步 hook：註冊到 app.js 的 persist() callback
+// 避免覆寫 persist() 造成無限迴圈
+window._onAfterPersist = function() {
   if (GSHEETS_CONFIG.autoSync && GSHEETS_CONFIG.webAppUrl) {
-    // debounce：3 秒後才送，避免連續操作一直打 API
     clearTimeout(window._syncTimer);
     window._syncTimer = setTimeout(syncToSheets, 3000);
   }
-}
+};
 
 // ════════════════════
 //  備份設定 Modal
@@ -179,7 +177,9 @@ function saveBackupSettings() {
   GSHEETS_CONFIG.autoSync  = auto;
   localStorage.setItem('gs-webAppUrl', url);
   localStorage.setItem('gs-autoSync',  String(auto));
-  showToast('✓ 設定已儲存');
+  // 儲存後立即同步一次，確保試算表有最新資料
+  if (url) syncToSheets();
+  showToast('✓ 設定已儲存，正在同步…');
   closeOv('ovBackup');
 }
 

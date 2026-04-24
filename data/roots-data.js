@@ -721,18 +721,3 @@ window.ROOTS=[
     {w:'decisive',hl:'cis',meaning:'果斷的（de+cis+ive→切斷的力量）'},
   ]},
 ];
-
-let selectedRoot=null;
-let rootMode='list'; // 'list' | 'card'
-let rfcOrder=[], rfcIdx=0;
-
-function setRootMode(mode){
-  rootMode=mode;
-  document.getElementById('btnListMode').classList.toggle('on', mode==='list');
-  document.getElementById('btnCardMode').classList.toggle('on', mode==='card');
-  document.getElementById('rootsListWrap').classList.toggle('hidden', mode==='card');
-  document.getElementById('rootsCardWrap').classList.toggle('show', mode==='card');
-  if(mode==='card'){ rfcBuildOrder(); rfcShow(); }
-}
-
-function renderRoots(){
