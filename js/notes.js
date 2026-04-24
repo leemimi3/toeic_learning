@@ -2,6 +2,9 @@
 //  notes.js — 學習筆記：新增/編輯/刪除、篩選、渲染
 // ════════════════════════════════════════
 
+let curNoteType = 'all';   // 類型篩選
+let curNotePart = 'all';   // Part 篩選
+
 // ── Modal 開關 ──
 function openNoteModal(id = null) {
   editNoteId = id;
@@ -17,6 +20,7 @@ function openNoteModal(id = null) {
   } else {
     ['n-title','n-body','n-tip'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('n-type').value = 'listen';
+    document.getElementById('n-part').value = 'Part 1';
     document.getElementById('n-hard').value = 'no';
     document.getElementById('noteModalTitle').textContent = '新增筆記';
   }
@@ -40,11 +44,9 @@ function saveNote() {
     date: existing ? existing.date : new Date().toISOString(),
   };
 
-  if (editNoteId) {
-    notes[notes.findIndex(x => x.id === editNoteId)] = n;
-  } else {
-    notes.unshift(n);
-  }
+  if (editNoteId) notes[notes.findIndex(x => x.id === editNoteId)] = n;
+  else            notes.unshift(n);
+
   persist();
   closeOv('ovNote');
   renderNotes();
@@ -60,23 +62,41 @@ function deleteNote(id) {
   renderDash();
 }
 
-// ── 篩選 ──
-function setNoteFilter(f, btn) {
-  curNoteFilter = f;
-  document.querySelectorAll('#noteFilters button').forEach(b => {
+// ── 類型篩選 ──
+function setNoteType(f, btn) {
+  curNoteType = f;
+  document.querySelectorAll('#noteTypeFilters button').forEach(b => {
     b.style.borderColor = '';
-    b.style.color = '';
+    b.style.color       = '';
+    b.style.background  = '';
   });
   btn.style.borderColor = 'var(--gold)';
   btn.style.color       = 'var(--gold)';
   renderNotes();
 }
 
+// ── Part 篩選 ──
+function setNotePart(p, btn) {
+  curNotePart = p;
+  document.querySelectorAll('#notePartFilters button').forEach(b => {
+    b.style.borderColor = '';
+    b.style.color       = '';
+  });
+  btn.style.borderColor = 'var(--blue)';
+  btn.style.color       = 'var(--blue)';
+  renderNotes();
+}
+
 // ── 渲染 ──
 function renderNotes() {
-  const list = notes.filter(n => curNoteFilter === 'all' || n.type === curNoteFilter);
-  const c    = document.getElementById('notesList');
-  const e    = document.getElementById('notesEmpty');
+  const list = notes.filter(n => {
+    if (curNoteType !== 'all' && n.type !== curNoteType) return false;
+    if (curNotePart !== 'all' && n.part !== curNotePart) return false;
+    return true;
+  });
+
+  const c = document.getElementById('notesList');
+  const e = document.getElementById('notesEmpty');
   if (!list.length) { c.innerHTML = ''; e.style.display = 'block'; return; }
   e.style.display = 'none';
 

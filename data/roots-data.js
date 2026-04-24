@@ -5,7 +5,7 @@
 // ═══════════════════════════════════
 //  ROOTS DATA & RENDER
 // ═══════════════════════════════════
-const ROOTS=[
+window.ROOTS=[
 // ── 字首 Prefixes ──
   {id:'pre',name:'pre-',meaning:'前、事先',origin:'拉丁文 prae',words:[
     {w:'predict',hl:'pre',meaning:'預測（pre+dict說→事先說）'},

@@ -20,6 +20,7 @@
   </nav>
   <div class="header-right">
     <div class="today-pill">今日待複習 <span id="todayCount">0</span></div>
+    <button class="btn-backup" onclick="openBackupModal()" title="備份與同步">☁ 備份</button>
   </div>
 </header>
 
@@ -283,16 +284,33 @@
     </div>
     <button class="btn btn-gold" onclick="openNoteModal()">＋ 新增筆記</button>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="noteFilters">
-    <button class="btn btn-ghost btn-sm" style="border-color:var(--gold);color:var(--gold)" data-f="all" onclick="setNoteFilter('all',this)">全部</button>
-    <button class="btn btn-ghost btn-sm" data-f="listen" onclick="setNoteFilter('listen',this)">聽力</button>
-    <button class="btn btn-ghost btn-sm" data-f="read" onclick="setNoteFilter('read',this)">閱讀</button>
-    <button class="btn btn-ghost btn-sm" data-f="grammar" onclick="setNoteFilter('grammar',this)">文法</button>
-    <button class="btn btn-ghost btn-sm" data-f="vocab" onclick="setNoteFilter('vocab',this)">單字</button>
+
+  <div class="filter-row-label">類型</div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;" id="noteTypeFilters">
+    <button class="btn btn-ghost btn-sm" style="border-color:var(--gold);color:var(--gold)" onclick="setNoteType('all',this)">全部</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteType('listen',this)">聽力</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteType('read',this)">閱讀</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteType('grammar',this)">文法</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteType('vocab',this)">單字</button>
   </div>
+
+  <div class="filter-row-label">Part</div>
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;" id="notePartFilters">
+    <button class="btn btn-ghost btn-sm" style="border-color:var(--blue);color:var(--blue)" onclick="setNotePart('all',this)">全部</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 1',this)">Part 1 <span class="part-sub">照片描述</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 2',this)">Part 2 <span class="part-sub">應答問題</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 3',this)">Part 3 <span class="part-sub">簡短對話</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 4',this)">Part 4 <span class="part-sub">簡短獨白</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 5',this)">Part 5 <span class="part-sub">句子填空</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 6',this)">Part 6 <span class="part-sub">短文填空</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('Part 7',this)">Part 7 <span class="part-sub">閱讀測驗</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('文法',this)">文法</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNotePart('單字',this)">單字</button>
+  </div>
+
   <div class="notes-list" id="notesList"></div>
   <div class="empty-state" id="notesEmpty" style="display:none">
-    <div class="empty-icon">📝</div>還沒有筆記<br>點右上角「新增筆記」開始記錄！
+    <div class="empty-icon">📝</div>還沒有符合的筆記<br>點右上角「新增筆記」開始記錄！
   </div>
 </div>
 
@@ -389,6 +407,105 @@
   </div>
 </div>
 
+
+<!-- ══ BACKUP MODAL ══ -->
+<div class="overlay" id="ovBackup" onclick="ovClose(event,'ovBackup')">
+  <div class="modal">
+    <div class="modal-header">
+      <span>☁ 備份與同步</span>
+      <button class="modal-close" onclick="closeOv('ovBackup')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- 方案一：匯出/匯入 JSON -->
+      <div class="backup-section">
+        <div class="backup-section-title">📦 方案一：手動備份（JSON）</div>
+        <div class="backup-section-desc">把所有單字和筆記下載成一個 .json 檔案存到電腦，需要時再匯入還原。</div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-gold btn-sm" onclick="exportData()">⬇ 匯出備份</button>
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+            ⬆ 匯入備份
+            <input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])">
+          </label>
+        </div>
+      </div>
+
+      <div class="backup-divider"></div>
+
+      <!-- 方案二：Google Sheets -->
+      <div class="backup-section">
+        <div class="backup-section-title">📊 方案二：Google Sheets 同步</div>
+        <div class="backup-section-desc">資料自動備份到你的 Google 試算表，換裝置也能還原。</div>
+
+        <div class="backup-howto">
+          <div class="howto-title">⚙ 設定步驟（只需做一次）</div>
+          <ol class="howto-steps">
+            <li>開啟 <a href="https://script.google.com" target="_blank">script.google.com</a>，點「新增專案」</li>
+            <li>把下方程式碼貼入編輯器並儲存</li>
+            <li>點「部署 → 新增部署」，類型選「網路應用程式」</li>
+            <li>執行身分選「我」，存取權選「任何人」，按「部署」</li>
+            <li>複製產生的 Web App URL，貼到下方欄位</li>
+          </ol>
+          <details style="margin-top:10px;">
+            <summary style="cursor:pointer;font-family:var(--font-mono);font-size:.7rem;color:var(--gold)">展開 Apps Script 程式碼</summary>
+            <pre class="code-block">const SHEET_NAME = 'toeic-backup';
+
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss   = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet  = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  sheet.clearContents();
+  sheet.getRange(1,1).setValue(data.vocab  || '[]');
+  sheet.getRange(2,1).setValue(data.notes  || '[]');
+  sheet.getRange(3,1).setValue(data.streak || '[]');
+  sheet.getRange(4,1).setValue(data.syncAt || '');
+  return ContentService.createTextOutput('ok');
+}
+
+function doGet(e) {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return ContentService.createTextOutput(JSON.stringify({})).setMimeType(ContentService.MimeType.JSON);
+  const result = {
+    vocab:  sheet.getRange(1,1).getValue(),
+    notes:  sheet.getRange(2,1).getValue(),
+    streak: sheet.getRange(3,1).getValue(),
+    syncAt: sheet.getRange(4,1).getValue(),
+  };
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+          </details>
+        </div>
+
+        <div class="form-group" style="margin-top:14px;margin-bottom:10px;">
+          <label class="form-label">Web App URL</label>
+          <input class="inp" id="gs-url-input" placeholder="https://script.google.com/macros/s/…/exec">
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;color:var(--muted)">
+            <input type="checkbox" id="gs-auto-toggle" style="accent-color:var(--gold)">
+            新增單字/筆記後自動同步（3 秒延遲）
+          </label>
+        </div>
+        <div id="syncStatus" class="sync-status"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-gold btn-sm" onclick="syncToSheets()">⬆ 推送到試算表</button>
+          <button class="btn btn-ghost btn-sm" onclick="syncFromSheets()">⬇ 從試算表還原</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovBackup')">關閉</button>
+      <button class="btn btn-gold"  onclick="saveBackupSettings()">儲存設定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 通知 -->
+<div id="toastMsg" class="toast"></div>
+
   <!-- JS: 資料 → 功能模組 → 主程式（順序重要） -->
   <script src="data/roots-data.js"></script>
   <script src="js/app.js"></script>
@@ -397,5 +514,6 @@
   <script src="js/dashboard.js"></script>
   <script src="js/practice.js"></script>
   <script src="js/roots.js"></script>
+  <script src="js/backup.js"></script>
 </body>
 </html>
