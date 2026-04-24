@@ -18,6 +18,7 @@
     <button class="nav-btn" onclick="goto('roots',this)">🌱 字根字首</button>
     <button class="nav-btn" onclick="goto('notes',this)">📝 筆記</button>
     <button class="nav-btn" onclick="goto('learn',this)">📖 學習區</button>
+    <button class="nav-btn" onclick="goto('topics',this)">📗 主題</button>
   </nav>
   <div class="header-right">
     <div class="today-pill">今日待複習 <span id="todayCount">0</span></div>
@@ -326,6 +327,75 @@
 </div>
 
   <div id="modalsContainer"></div>
+<!-- ══ TOPICS PAGE ══ -->
+<div class="page" id="page-topics">
+  <div class="section-title">主題學習</div>
+  <div class="section-sub">TOEIC TOPIC CATEGORIES · 13 大主題</div>
+
+  <!-- 目標進度條 -->
+  <div id="topicGoalBar" class="topic-goal-bar"></div>
+
+  <div class="topics-layout">
+    <!-- 左側主題列表 -->
+    <div class="topic-grid" id="topicGrid"></div>
+    <!-- 右側詳細內容 -->
+    <div class="topic-detail-wrap" id="topicDetail">
+      <div class="empty-state"><div class="empty-icon">📗</div>選擇左側主題開始學習</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOPIC GOAL MODAL ══ -->
+<div class="overlay" id="ovTopicGoal" onclick="ovClose(event,'ovTopicGoal')">
+  <div class="modal">
+    <div class="modal-header">
+      <span>🎯 設定學習目標</span>
+      <button class="modal-close" onclick="closeOv('ovTopicGoal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">📅 考試目標日期</label>
+        <input class="inp" type="date" id="tg-exam-date">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">每週完成主題數</label>
+          <select class="inp" id="tg-weekly-topics">
+            <option value="1">1 個主題</option>
+            <option value="2" selected>2 個主題</option>
+            <option value="3">3 個主題</option>
+            <option value="4">4 個主題</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">每日學習單字數</label>
+          <select class="inp" id="tg-daily-vocab">
+            <option value="3">3 個</option>
+            <option value="5" selected>5 個</option>
+            <option value="10">10 個</option>
+            <option value="15">15 個</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">每日筆記目標</label>
+        <select class="inp" id="tg-daily-notes">
+          <option value="1">1 則</option>
+          <option value="2" selected>2 則</option>
+          <option value="3">3 則</option>
+        </select>
+      </div>
+      <div style="background:rgba(232,184,109,.08);border:1px solid rgba(232,184,109,.2);border-radius:8px;padding:12px 14px;font-size:.8rem;color:var(--muted);line-height:1.7">
+        💡 設定考試日期後，系統會自動計算倒數天數。每週主題數 × 週數 ≥ 13 個主題才能全部完成。
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovTopicGoal')">取消</button>
+      <button class="btn btn-gold" onclick="saveTopicGoalSettings()">儲存目標</button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Modal loader -->
   <script>
@@ -339,6 +409,7 @@
   <script src="js/dashboard.js"></script>
   <script src="js/practice.js"></script>
   <script src="js/backup.js"></script>
+  <script src="js/topics.js"></script>
   <script src="js/learn.js"></script>
   <script src="js/app.js"></script>
 </body>

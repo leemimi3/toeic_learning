@@ -46,6 +46,7 @@ function goto(id, btn) {
   if (id === 'roots')    renderRoots();
   if (id === 'practice') resetPractice();
   if (id === 'learn')    renderLearn();
+  if (id === 'topics')   renderTopics();
 }
 
 // ── TTS (Text-to-Speech) ──
