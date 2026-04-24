@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多益學習系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">多益 TOEIC</div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="goto('dash',this)">🏠 總覽</button>
+    <button class="nav-btn" onclick="goto('vocab',this)">📚 單字庫</button>
+    <button class="nav-btn" onclick="goto('practice',this)" id="navPractice">🎯 練習 <span class="badge" id="reviewBadge" style="display:none">0</span></button>
+    <button class="nav-btn" onclick="goto('roots',this)">🌱 字根字首</button>
+    <button class="nav-btn" onclick="goto('notes',this)">📝 筆記</button>
+  </nav>
+  <div class="header-right">
+    <div class="today-pill">今日待複習 <span id="todayCount">0</span></div>
+  </div>
+</header>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="page active" id="page-dash">
+  <div class="review-banner" id="reviewBanner">
+    <div>
+      <h2 id="bannerTitle">今日學習計畫</h2>
+      <p id="bannerDesc">設定複習週期，開始系統性學習</p>
+      <div class="streak-bar" id="streakBar"></div>
+    </div>
+    <button class="btn btn-gold" onclick="goto('practice',document.querySelectorAll('.nav-btn')[2])" style="flex-shrink:0">開始複習 →</button>
+  </div>
+
+  <div class="settings-panel">
+    <div class="settings-title">⚙ 複習設定</div>
+    <div class="settings-grid">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">每次練習單字數</label>
+        <select class="inp" id="settingCount" onchange="saveSettings()">
+          <option value="5">5 個</option>
+          <option value="10" selected>10 個</option>
+          <option value="15">15 個</option>
+          <option value="20">20 個</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">新單字每日上限</label>
+        <select class="inp" id="settingNew" onchange="saveSettings()">
+          <option value="5">5 個</option>
+          <option value="10" selected>10 個</option>
+          <option value="20">20 個</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">SRS 間隔週期</label>
+        <select class="inp" id="settingMode" onchange="saveSettings()">
+          <option value="standard" selected>標準 (1→3→7→14天)</option>
+          <option value="fast">快速 (1→2→5→10天)</option>
+          <option value="slow">慢速 (2→7→14→30天)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="num" id="statTotal">0</div>
+      <div class="lbl">單字總數</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statMastered">0</div>
+      <div class="lbl">已熟練（Level 3+）</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statNotes">0</div>
+      <div class="lbl">學習筆記</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:1rem;margin-bottom:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em">最近新增單字</div>
+  <div class="vocab-table" id="recentVocab"></div>
+</div>
+
+<!-- ══ VOCAB ══ -->
+<div class="page" id="page-vocab">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+    <div>
+      <div class="section-title">單字庫</div>
+      <div class="section-sub">VOCABULARY BANK</div>
+    </div>
+    <button class="btn btn-gold" onclick="openVocabModal()">＋ 新增單字</button>
+  </div>
+
+  <div class="tts-row">
+    <span class="lbl">🔊 朗讀速度</span>
+    <button class="speed-btn" onclick="setSpd(0.7,this)">慢</button>
+    <button class="speed-btn on" onclick="setSpd(1.0,this)">正常</button>
+    <button class="speed-btn" onclick="setSpd(1.4,this)">快</button>
+  </div>
+
+  <div class="vocab-toolbar">
+    <input class="inp vocab-search" id="vocabSearch" placeholder="搜尋單字、意思…" oninput="renderVocab()">
+    <select class="inp" style="width:130px" id="vocabFilter" onchange="renderVocab()">
+      <option value="all">全部</option>
+      <option value="0">待學習</option>
+      <option value="1">初學</option>
+      <option value="2">熟悉中</option>
+      <option value="3">已熟練</option>
+    </select>
+  </div>
+  <div class="vocab-table" id="vocabList"></div>
+  <div class="empty-state" id="vocabEmpty" style="display:none">
+    <div class="empty-icon">📚</div>還沒有單字<br>點右上角「新增單字」開始建立！
+  </div>
+</div>
+
+<!-- ══ PRACTICE ══ -->
+<div class="page" id="page-practice">
+  <div class="section-title">練習模式</div>
+  <div class="section-sub">PRACTICE MODE</div>
+
+  <div id="practiceSetup">
+    <div class="practice-select">
+      <div class="mode-card selected" data-mode="spelling" onclick="selMode(this)">
+        <div class="icon">✏️</div>
+        <div class="title">拼寫練習</div>
+        <div class="desc">聽到單字後，親自輸入拼寫</div>
+      </div>
+      <div class="mode-card" data-mode="listen" onclick="selMode(this)">
+        <div class="icon">🎧</div>
+        <div class="title">聽力選字</div>
+        <div class="desc">聽發音，從四個選項選出正確單字</div>
+      </div>
+      <div class="mode-card" data-mode="zh2en" onclick="selMode(this)">
+        <div class="icon">🀄</div>
+        <div class="title">中文→英文</div>
+        <div class="desc">看中文意思，選出對應的英文單字</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;">
+      <div class="form-group" style="margin-bottom:0;flex:1">
+        <label class="form-label">練習範圍</label>
+        <select class="inp" id="practiceRange">
+          <option value="due">今日到期複習</option>
+          <option value="all">全部單字</option>
+          <option value="weak">弱點單字（Level 0-1）</option>
+        </select>
+      </div>
+      <div style="padding-top:22px">
+        <button class="btn btn-gold" onclick="startPractice()">開始練習 →</button>
+      </div>
+    </div>
+    <div id="noDueMsg" style="display:none" class="empty-state">
+      <div class="empty-icon">🎉</div>今天的複習都完成了！<br>明天再來吧，或選「全部單字」繼續練習
+    </div>
+  </div>
+
+  <div class="practice-arena" id="practiceArena">
+    <div class="practice-header">
+      <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted)" id="practiceLabel">拼寫練習</span>
+      <div class="progress-track"><div class="progress-fill" id="practiceFill" style="width:0%"></div></div>
+      <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted)" id="practiceCounter">0/0</span>
+      <button class="btn btn-ghost btn-sm" onclick="endPractice()" style="margin-left:10px">結束</button>
+    </div>
+
+    <div class="q-card" id="qCard">
+      <div class="q-prompt" id="qPrompt"></div>
+      <div class="q-word" id="qWord"></div>
+      <div class="q-sub" id="qSub"></div>
+    </div>
+
+    <!-- Spelling -->
+    <div id="spellZone" style="display:none">
+      <div style="display:flex;gap:10px;max-width:420px;margin:0 auto 12px;">
+        <input class="inp" id="spellInput" placeholder="輸入單字拼寫…" onkeydown="if(event.key==='Enter')checkSpell()">
+        <button class="btn btn-gold" onclick="checkSpell()">確認</button>
+        <button class="btn btn-ghost" onclick="speakQ()">🔊</button>
+      </div>
+      <div class="spell-result" id="spellResult"></div>
+    </div>
+
+    <!-- MCQ -->
+    <div id="mcqZone" style="display:none">
+      <div style="text-align:center;margin-bottom:12px;">
+        <button class="btn btn-ghost btn-sm" onclick="speakQ()">🔊 再聽一次</button>
+      </div>
+      <div class="choices" id="choicesGrid"></div>
+    </div>
+
+    <div class="feedback-bar" id="feedbackBar" style="display:none">
+      <button class="btn btn-gold" onclick="nextQ()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Score screen -->
+  <div class="score-screen" id="scoreScreen" style="display:none">
+    <div class="big" id="scorePct">—</div>
+    <div class="lbl">答對率</div>
+    <div style="margin:20px 0;font-family:var(--font-mono);font-size:.84rem;color:var(--muted)" id="scoreDetail"></div>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <button class="btn btn-gold" onclick="startPractice()">再來一次</button>
+      <button class="btn btn-ghost" onclick="goto('vocab',document.querySelectorAll('.nav-btn')[1])">回單字庫</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROOTS ══ -->
+<div class="page" id="page-roots">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+    <div>
+      <div class="section-title">字根字首學習</div>
+      <div class="section-sub">ROOTS & PREFIXES</div>
+    </div>
+  </div>
+
+  <!-- Mode Toggle -->
+  <div class="roots-mode-toggle">
+    <button class="mode-toggle-btn on" id="btnListMode" onclick="setRootMode('list')">📋 列表學習</button>
+    <button class="mode-toggle-btn" id="btnCardMode" onclick="setRootMode('card')">🃏 卡片練習</button>
+  </div>
+
+  <!-- LIST MODE -->
+  <div class="roots-layout-wrap" id="rootsListWrap">
+    <div class="roots-layout">
+      <div class="roots-list">
+        <div class="roots-list-header">字根 / 字首列表</div>
+        <div id="rootsList"></div>
+      </div>
+      <div class="root-detail" id="rootDetail">
+        <div style="color:var(--muted);font-size:.88rem;padding:40px 20px;text-align:center">← 選擇左側字根開始學習</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD MODE -->
+  <div class="rfc-wrap" id="rootsCardWrap">
+    <div class="rfc-progress"><div class="rfc-bar" id="rfcBar" style="width:0%"></div></div>
+
+    <div class="rfc-card" onclick="rfcFlip()">
+      <div class="rfc-inner" id="rfcInner">
+        <div class="rfc-front">
+          <div class="rfc-hint">TAP TO FLIP · 點擊翻面查看意思</div>
+          <div class="rfc-root" id="rfcRoot">—</div>
+          <div class="rfc-origin" id="rfcOrigin"></div>
+        </div>
+        <div class="rfc-back">
+          <div class="rfc-hint">字根意思</div>
+          <div class="rfc-meaning-big" id="rfcMeaning">—</div>
+          <div class="rfc-words-preview" id="rfcWordsPreview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rfc-nav">
+      <button class="rfc-nav-btn" id="rfcPrev" onclick="rfcPrev()">← 上一個</button>
+      <span class="rfc-counter" id="rfcCounter">0 / 0</span>
+      <button class="rfc-nav-btn" id="rfcNext" onclick="rfcNext()">下一個 →</button>
+    </div>
+
+    <div class="rfc-tools">
+      <button class="btn btn-ghost btn-sm" onclick="rfcShuffle()">🔀 隨機排序</button>
+      <button class="btn btn-ghost btn-sm" onclick="rfcReset()">↺ 重置順序</button>
+      <button class="btn btn-ghost btn-sm" onclick="setRootMode('list')">📋 切換列表</button>
+    </div>
+
+    <!-- Word list for current root -->
+    <div class="rfc-wordlist" id="rfcWordlist">
+      <div class="rfc-wordlist-hdr">此字根相關單字</div>
+      <div id="rfcWordlistBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTES ══ -->
+<div class="page" id="page-notes">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+    <div>
+      <div class="section-title">學習筆記</div>
+      <div class="section-sub">STUDY NOTES</div>
+    </div>
+    <button class="btn btn-gold" onclick="openNoteModal()">＋ 新增筆記</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="noteFilters">
+    <button class="btn btn-ghost btn-sm" style="border-color:var(--gold);color:var(--gold)" data-f="all" onclick="setNoteFilter('all',this)">全部</button>
+    <button class="btn btn-ghost btn-sm" data-f="listen" onclick="setNoteFilter('listen',this)">聽力</button>
+    <button class="btn btn-ghost btn-sm" data-f="read" onclick="setNoteFilter('read',this)">閱讀</button>
+    <button class="btn btn-ghost btn-sm" data-f="grammar" onclick="setNoteFilter('grammar',this)">文法</button>
+    <button class="btn btn-ghost btn-sm" data-f="vocab" onclick="setNoteFilter('vocab',this)">單字</button>
+  </div>
+  <div class="notes-list" id="notesList"></div>
+  <div class="empty-state" id="notesEmpty" style="display:none">
+    <div class="empty-icon">📝</div>還沒有筆記<br>點右上角「新增筆記」開始記錄！
+  </div>
+</div>
+
+<!-- ══ VOCAB MODAL ══ -->
+<div class="overlay" id="ovVocab" onclick="ovClose(event,'ovVocab')">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="vocabModalTitle">新增單字</span>
+      <button class="modal-close" onclick="closeOv('ovVocab')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">英文單字 *</label>
+          <input class="inp" id="v-word" placeholder="例：consecutive" oninput="onWordInput()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">詞性</label>
+          <select class="inp" id="v-pos">
+            <option value="adj.">adj. 形容詞</option>
+            <option value="n.">n. 名詞</option>
+            <option value="v.">v. 動詞</option>
+            <option value="adv.">adv. 副詞</option>
+            <option value="prep.">prep. 介系詞</option>
+            <option value="phrase">phrase 片語</option>
+          </select>
+        </div>
+      </div>
+      <!-- 字根自動偵測提示 -->
+      <div id="rootHintBox" style="display:none;margin-bottom:10px;"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">中文意思 *</label>
+          <input class="inp" id="v-meaning" placeholder="例：連續的、接連的">
+        </div>
+        <div class="form-group">
+          <label class="form-label">音標</label>
+          <input class="inp" id="v-phonetic" placeholder="例：/kənˈsɛkjʊtɪv/">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">例句（中英對照）</label>
+        <textarea class="inp" id="v-example" placeholder="例：We had three consecutive days of rain.&#10;（我們連續三天下雨）"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">記憶口訣 / 字根拆解</label>
+        <input class="inp" id="v-tip" placeholder="例：con(連)+secu(跟著走)→連續">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovVocab')">取消</button>
+      <button class="btn btn-gold" onclick="saveVocab()">儲存單字</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTE MODAL ══ -->
+<div class="overlay" id="ovNote" onclick="ovClose(event,'ovNote')">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="noteModalTitle">新增筆記</span>
+      <button class="modal-close" onclick="closeOv('ovNote')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">類型</label>
+          <select class="inp" id="n-type">
+            <option value="listen">聽力</option><option value="read">閱讀</option>
+            <option value="grammar">文法</option><option value="vocab">單字</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Part</label>
+          <select class="inp" id="n-part">
+            <option>Part 1</option><option>Part 2</option><option>Part 3</option>
+            <option>Part 4</option><option>Part 5</option><option>Part 6</option>
+            <option>Part 7</option><option value="文法">文法</option><option value="單字">單字</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">標題 *</label><input class="inp" id="n-title" placeholder="例：分詞構句、NOT question技巧…"></div>
+      <div class="form-group"><label class="form-label">內容</label><textarea class="inp" id="n-body" placeholder="考點、錯誤原因、正確答案…"></textarea></div>
+      <div class="form-group"><label class="form-label">記憶技巧</label><input class="inp" id="n-tip" placeholder="個人筆記、聯想…"></div>
+      <div class="form-group">
+        <label class="form-label">難度</label>
+        <select class="inp" id="n-hard"><option value="no">一般</option><option value="yes">⚑ 困難</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovNote')">取消</button>
+      <button class="btn btn-gold" onclick="saveNote()">儲存筆記</button>
+    </div>
+  </div>
+</div>
+
+  <!-- JS: 資料 → 功能模組 → 主程式（順序重要） -->
+  <script src="data/roots-data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/vocab.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/practice.js"></script>
+  <script src="js/roots.js"></script>
+</body>
+</html>
