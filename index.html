@@ -262,10 +262,20 @@
       <button class="rfc-nav-btn" id="rfcNext" onclick="rfcNext()">下一個 →</button>
     </div>
 
+    <div class="rfc-cat-row" id="rfcCatRow">
+      <button class="rfc-cat-btn active" data-cat="all" onclick="rfcSetCategory('all')">全部</button>
+      <button class="rfc-cat-btn" data-cat="A" onclick="rfcSetCategory('A')">字首</button>
+      <button class="rfc-cat-btn" data-cat="B" onclick="rfcSetCategory('B')">動作</button>
+      <button class="rfc-cat-btn" data-cat="C" onclick="rfcSetCategory('C')">感知</button>
+      <button class="rfc-cat-btn" data-cat="D" onclick="rfcSetCategory('D')">數量時間</button>
+      <button class="rfc-cat-btn" data-cat="E" onclick="rfcSetCategory('E')">品質</button>
+      <button class="rfc-cat-btn" data-cat="F" onclick="rfcSetCategory('F')">商務</button>
+      <button class="rfc-cat-btn" data-cat="G" onclick="rfcSetCategory('G')">字尾</button>
+    </div>
     <div class="rfc-tools">
-      <button class="btn btn-ghost btn-sm" onclick="rfcShuffle()">🔀 隨機排序</button>
-      <button class="btn btn-ghost btn-sm" onclick="rfcReset()">↺ 重置順序</button>
-      <button class="btn btn-ghost btn-sm" onclick="setRootMode('list')">📋 切換列表</button>
+      <button class="btn btn-ghost btn-sm" onclick="rfcShuffle()">🔀 隨機</button>
+      <button class="btn btn-ghost btn-sm" onclick="rfcReset()">↺ 重置</button>
+      <button class="btn btn-ghost btn-sm" onclick="setRootMode('list')">📋 列表</button>
     </div>
 
     <!-- Word list for current root -->
