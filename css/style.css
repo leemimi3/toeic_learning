@@ -517,3 +517,152 @@ select.inp { cursor: pointer; }
   /* Modal 全寬 */
   .modal { width:100%; }
 }
+
+/* ════════════════════
+   學習區 LEARN
+════════════════════ */
+.learn-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  min-height: 600px;
+}
+.learn-nav-wrap { display: flex; flex-direction: column; gap: 8px; }
+.learn-nav-label {
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .14em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.learn-nav { display: flex; flex-direction: column; gap: 6px; }
+.learn-nav-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.learn-nav-btn:hover { border-color: var(--muted); }
+.learn-nav-btn.active { background: rgba(255,255,255,.04); }
+.learn-nav-part  { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; }
+.learn-nav-title { font-size: .74rem; color: var(--muted); }
+
+/* Learn body */
+.learn-body { display: flex; flex-direction: column; gap: 18px; }
+.learn-header {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.learn-part-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  padding: 2px 10px;
+  border-radius: 4px;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+.learn-part-title { font-family: var(--font-display); font-size: 1.8rem; color: var(--text); margin-bottom: 4px; }
+.learn-part-meta  { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); margin-bottom: 10px; }
+.learn-part-intro { font-size: .86rem; color: var(--muted); line-height: 1.7; }
+.learn-note-tip   { margin-top: 10px; font-size: .8rem; color: var(--green); background: rgba(76,175,130,.08); border: 1px solid rgba(76,175,130,.2); border-radius: 6px; padding: 8px 12px; }
+
+.learn-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.learn-section-title { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .1em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px; }
+
+/* Type cards */
+.learn-types { display: flex; flex-direction: column; gap: 10px; }
+.learn-type-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px 15px;
+}
+.learn-type-name { font-weight: 700; font-size: .88rem; margin-bottom: 3px; }
+.learn-type-desc { font-size: .78rem; color: var(--muted); margin-bottom: 5px; }
+.learn-type-key  { font-size: .76rem; color: var(--gold); margin-bottom: 5px; }
+.learn-type-example {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--green);
+  background: rgba(76,175,130,.06);
+  border-left: 3px solid rgba(76,175,130,.3);
+  padding: 6px 10px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.6;
+}
+
+/* Strategy */
+.learn-strategy {
+  font-size: .86rem;
+  color: var(--text);
+  line-height: 1.8;
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 14px 16px;
+}
+
+/* Keywords */
+.learn-keywords { display: flex; flex-direction: column; gap: 6px; }
+.learn-kw-item  { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--text); }
+.learn-kw-text  { font-family: var(--font-mono); font-size: .76rem; flex: 1; }
+
+/* Traps */
+.learn-traps { display: flex; flex-direction: column; gap: 7px; }
+.learn-trap-item {
+  font-size: .82rem;
+  color: var(--red);
+  background: rgba(224,92,92,.06);
+  border: 1px solid rgba(224,92,92,.2);
+  border-radius: 5px;
+  padding: 7px 12px;
+}
+
+/* RWD */
+@media (max-width: 740px) {
+  .learn-layout { grid-template-columns: 1fr; }
+  .learn-nav { flex-direction: row; flex-wrap: wrap; }
+  .learn-nav-btn { flex: 1; min-width: 80px; align-items: center; flex-direction: row; gap: 6px; }
+  .learn-nav-title { display: none; }
+}
+@media (max-width: 480px) {
+  .learn-nav-btn { padding: 7px 10px; }
+  .learn-nav-part { font-size: .65rem; }
+}
+
+/* ── 學習區練習例句（Part 2）── */
+.learn-practice { display: flex; flex-direction: column; gap: 10px; }
+.learn-practice-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; padding: 12px 14px;
+}
+.learn-practice-num {
+  font-family: var(--font-mono); font-size: .68rem;
+  color: var(--gold); background: rgba(232,184,109,.1);
+  border: 1px solid rgba(232,184,109,.25);
+  border-radius: 4px; padding: 2px 7px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.learn-practice-body { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.learn-practice-q {
+  font-family: var(--font-mono); font-size: .8rem;
+  color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.learn-practice-a {
+  font-family: var(--font-mono); font-size: .78rem;
+  color: var(--green); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.learn-practice-note {
+  font-size: .7rem; color: var(--muted);
+  font-style: italic; margin-top: 2px;
+}

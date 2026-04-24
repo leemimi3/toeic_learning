@@ -45,6 +45,7 @@ function goto(id, btn) {
   if (id === 'notes')    renderNotes();
   if (id === 'roots')    renderRoots();
   if (id === 'practice') resetPractice();
+  if (id === 'learn')    renderLearn();
 }
 
 // ── TTS (Text-to-Speech) ──
