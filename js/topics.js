@@ -117,10 +117,12 @@ function showTopic(id) {
         </label>
       </div>
       <div class="td-tabs">
-        <button class="td-tab ${currentTopicTab==='vocab'?'active':''}" onclick="switchTopicTab('vocab')">📚 核心單字 (${t.vocab.length})</button>
-        <button class="td-tab ${currentTopicTab==='patterns'?'active':''}" onclick="switchTopicTab('patterns')">💬 常見句型</button>
+        <button class="td-tab ${currentTopicTab==='vocab'?'active':''}" onclick="switchTopicTab('vocab')">📚 單字</button>
+        <button class="td-tab ${currentTopicTab==='patterns'?'active':''}" onclick="switchTopicTab('patterns')">💬 句型</button>
+        <button class="td-tab ${currentTopicTab==='synonyms'?'active':''}" onclick="switchTopicTab('synonyms')">🔄 同義替換</button>
+        <button class="td-tab ${currentTopicTab==='errors'?'active':''}" onclick="switchTopicTab('errors')">⚠ 常見錯誤</button>
         <button class="td-tab ${currentTopicTab==='practice'?'active':''}" onclick="switchTopicTab('practice')">🧩 練習題</button>
-        <button class="td-tab ${currentTopicTab==='exam'?'active':''}" onclick="switchTopicTab('exam')">🎯 考試重點</button>
+        <button class="td-tab ${currentTopicTab==='exam'?'active':''}" onclick="switchTopicTab('exam')">🎯 重點</button>
       </div>
     </div>
 
@@ -135,9 +137,10 @@ function switchTopicTab(tab) {
   const prog = topicGoals.topicProgress?.[currentTopicId] || {};
   const done = prog.vocabDone || [];
   // Update tab buttons
-  document.querySelectorAll('.td-tab').forEach(b => b.classList.toggle('active', b.textContent.includes(
-    tab === 'vocab' ? '核心單字' : tab === 'patterns' ? '句型' : tab === 'practice' ? '練習題' : '考試'
-  )));
+  document.querySelectorAll('.td-tab').forEach(b => {
+    const map = {vocab:'單字',patterns:'句型',synonyms:'同義',errors:'常見錯誤',practice:'練習',exam:'重點'};
+    b.classList.toggle('active', b.textContent.includes(map[tab]||''));
+  });
   renderTopicTabContent(t, done);
 }
 
@@ -146,15 +149,24 @@ function renderTopicTabContent(t, done) {
   if (!content || !t) return;
 
   if (currentTopicTab === 'vocab') {
+    const filter = window._vocabFilter || 'all';
+    const filtered = filter === 'all' ? t.vocab
+      : filter === '1' ? t.vocab.filter(v=>v.level===1)
+      : t.vocab.filter(v=>v.level>=2);
     content.innerHTML = `
+      <div class="tv-filter-bar">
+        <button class="tv-filter-btn ${filter==='all'?'on':''}" onclick="setVocabFilter('all')">全部 (${t.vocab.length})</button>
+        <button class="tv-filter-btn ${filter==='1'?'on':''}" onclick="setVocabFilter('1')">★ 核心 (${t.vocab.filter(v=>v.level===1).length})</button>
+        <button class="tv-filter-btn ${filter==='2'?'on':''}" onclick="setVocabFilter('2')">★★ 進階 (${t.vocab.filter(v=>v.level>=2).length})</button>
+      </div>
       <div class="tv-list">
-        ${t.vocab.map((v, i) => {
-          const isDone = done.includes(i);
+        ${filtered.map((v, i) => { const i2 = t.vocab.indexOf(v);
+          const isDone = done.includes(i2);
           return `
             <div class="tv-item ${isDone ? 'learned' : ''}">
               <div class="tv-check">
                 <input type="checkbox" ${isDone ? 'checked' : ''}
-                  onchange="toggleVocabDone('${t.id}', ${i}, this.checked)">
+                  onchange="toggleVocabDone('${t.id}', ${i2}, this.checked)">
               </div>
               <div class="tv-body">
                 <div class="tv-word">
@@ -187,6 +199,28 @@ function renderTopicTabContent(t, done) {
             </div>
           </div>`).join('')}
       </div>`;
+  } else if (currentTopicTab === 'synonyms') {
+    const syns = t.synonyms || [];
+    content.innerHTML = syns.length ? `
+      <div class="ts-list">
+        ${syns.map(s => `
+          <div class="ts-item">
+            <div class="ts-word">${esc(s.word)}</div>
+            <div class="ts-others">${s.others.map(o => `<span class="ts-chip">${esc(o)}</span>`).join('')}</div>
+            <div class="ts-note">💡 ${esc(s.note)}</div>
+          </div>`).join('')}
+      </div>` : '<div class="empty-state" style="padding:30px">此主題同義替換資料準備中</div>';
+  } else if (currentTopicTab === 'errors') {
+    const errs = t.commonErrors || [];
+    content.innerHTML = errs.length ? `
+      <div class="te-err-list">
+        ${errs.map(e => `
+          <div class="te-err-item">
+            <div class="te-err-wrong">✗ ${esc(e.wrong)}</div>
+            <div class="te-err-right">✓ ${esc(e.right)}</div>
+            <div class="te-err-explain">💡 ${esc(e.explain)}</div>
+          </div>`).join('')}
+      </div>` : '<div class="empty-state" style="padding:30px">此主題常見錯誤資料準備中</div>';
   } else if (currentTopicTab === 'practice') {
     renderTopicPractice(t);
   } else {
@@ -444,4 +478,12 @@ function resetTopicPractice(topicId) {
   topicPracticeState[topicId] = { answers:{}, revealed:new Set() };
   const t = window.TOPICS_DATA.find(d => d.id === topicId);
   renderTopicPractice(t);
+}
+
+// ── 單字篩選 ──
+function setVocabFilter(f) {
+  window._vocabFilter = f;
+  const t = window.TOPICS_DATA.find(d => d.id === currentTopicId);
+  const prog = topicGoals.topicProgress?.[currentTopicId] || {};
+  renderTopicTabContent(t, prog.vocabDone || []);
 }

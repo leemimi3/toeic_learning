@@ -974,3 +974,48 @@ select.inp { cursor: pointer; }
   padding: 9px 13px;
   line-height: 1.6;
 }
+
+/* ════════════════════
+   主題：同義替換 / 常見錯誤 / 單字篩選
+════════════════════ */
+/* 單字層級篩選 */
+.tv-filter-bar { display:flex; gap:6px; padding:12px 18px 0; flex-wrap:wrap; }
+.tv-filter-btn {
+  padding:4px 12px; border-radius:16px;
+  border:1px solid var(--border); font-family:var(--font-mono);
+  font-size:.66rem; cursor:pointer; background:none; color:var(--muted);
+  transition:all .15s;
+}
+.tv-filter-btn:hover { border-color:var(--gold); color:var(--gold); }
+.tv-filter-btn.on { background:rgba(232,184,109,.12); border-color:var(--gold); color:var(--gold); }
+
+/* 單字難度星星 */
+.tv-level { font-size:.65rem; color:var(--gold); letter-spacing:1px; margin-left:4px; }
+
+/* 同義替換 */
+.ts-list { padding:14px 18px; display:flex; flex-direction:column; gap:10px; }
+.ts-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:13px 16px; }
+.ts-word { font-family:var(--font-mono); font-size:.95rem; font-weight:700; color:var(--gold); margin-bottom:8px; }
+.ts-others { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+.ts-chip {
+  background:rgba(91,143,212,.1); border:1px solid rgba(91,143,212,.25);
+  color:var(--blue); border-radius:4px; padding:3px 10px;
+  font-family:var(--font-mono); font-size:.72rem;
+}
+.ts-note { font-size:.76rem; color:var(--muted); font-style:italic; }
+
+/* 常見錯誤 */
+.te-err-list { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+.te-err-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:13px 16px; }
+.te-err-wrong {
+  font-family:var(--font-mono); font-size:.8rem; color:var(--red);
+  background:rgba(224,92,92,.06); border-left:3px solid var(--red);
+  padding:6px 10px; border-radius:0 4px 4px 0; margin-bottom:6px;
+  text-decoration:line-through;
+}
+.te-err-right {
+  font-family:var(--font-mono); font-size:.8rem; color:var(--green);
+  background:rgba(76,175,130,.06); border-left:3px solid var(--green);
+  padding:6px 10px; border-radius:0 4px 4px 0; margin-bottom:6px;
+}
+.te-err-explain { font-size:.76rem; color:var(--muted); line-height:1.6; }
