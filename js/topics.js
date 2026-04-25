@@ -389,101 +389,106 @@ const TOPIC_PRACTICE = {
 let topicPracticeState = {};
 
 function renderTopicPractice(t) {
-  const content = document.getElementById('topicTabContent');
-  if (!content) return;
-  const qs = TOPIC_PRACTICE[t.id] || [];
+  const el = document.getElementById('topicTabContent');
+  if (!el) return;
+  const qs = (window.TOPIC_PRACTICE || {})[t.id] || [];
   if (!qs.length) {
-    content.innerHTML = '<div class="empty-state" style="padding:40px"><div class="empty-icon">🚧</div>此主題練習題即將推出</div>';
+    el.innerHTML = '<div class="empty-state" style="padding:40px"><div class="empty-icon">🚧</div>練習題準備中</div>';
     return;
   }
   if (!topicPracticeState[t.id]) topicPracticeState[t.id] = { answers:{}, revealed:new Set() };
-  const state = topicPracticeState[t.id];
-  const done  = Object.keys(state.revealed).length || state.revealed.size || 0;
-  content.innerHTML = `
-    <div class="tpq-header">
-      <span class="tpq-count">${qs.length} 題 · 已完成 ${done}</span>
-      <button class="btn btn-ghost btn-sm" onclick="resetTopicPractice('${t.id}')">↺ 重置</button>
+
+  // Part filter
+  const parts = [...new Set(qs.map(q=>q.part))];
+  const cur = window._practicePartFilter || 'all';
+
+  const filtered = cur === 'all' ? qs : qs.filter(q => q.part === cur);
+
+  // Group questions by groupId (passage sharing)
+  const groups = [];
+  const seen = new Set();
+  filtered.forEach((q, qi) => {
+    const realIdx = qs.indexOf(q);
+    if (q.groupId) {
+      if (!seen.has(q.groupId)) {
+        seen.add(q.groupId);
+        const groupQs = filtered.filter(x => x.groupId === q.groupId);
+        groups.push({ type:'group', groupId:q.groupId, passage:q.passage, qs:groupQs,
+          indices:groupQs.map(x=>qs.indexOf(x)) });
+      }
+    } else {
+      groups.push({ type:'single', q, idx:realIdx });
+    }
+  });
+
+  el.innerHTML = `
+    <div class="tpq-part-filter">
+      <button class="tpq-pf-btn ${cur==='all'?'on':''}" onclick="setPracticePartFilter('all','${t.id}')">全部</button>
+      ${parts.map(p=>`<button class="tpq-pf-btn ${cur===p?'on':''}" onclick="setPracticePartFilter('${p}','${t.id}')">${p}</button>`).join('')}
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="resetTopicPractice('${t.id}')">↺ 重置</button>
     </div>
     <div class="tpq-list">
-      ${qs.map((q,qi) => renderQuestion(q, qi, t.id, state)).join('')}
+      ${groups.map(g => g.type==='group' ? renderPassageGroup(g, t.id, topicPracticeState[t.id]) : renderSingleQ(g.q, g.idx, t.id, topicPracticeState[t.id])).join('')}
     </div>`;
 }
 
-function renderQuestion(q, qi, topicId, state) {
-  const revealed = state.revealed.has(qi);
-  const chosen   = state.answers[qi];
-  const speakBtn = q.speak ? `<button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${esc(q.q)}">🔊</button>` : '';
-  const choicesHTML = q.choices.map((c,ci) => {
-    let cls = 'tpq-choice';
+function renderPassageGroup(g, topicId, state) {
+  const typeLabel = g.qs[0].type.includes('對話') ? '📢 對話內容'
+    : g.qs[0].type.includes('獨白') ? '🎙 獨白內容' : '📄 閱讀文章';
+  const canSpeak  = g.qs[0].type.includes('對話') || g.qs[0].type.includes('獨白');
+  const speakBtn  = canSpeak && g.passage
+    ? '<button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="' + esc(g.passage) + '" style="margin-left:8px">🔊</button>'
+    : '';
+  const passageLines = g.passage ? g.passage.split('\n').map(function(l){return esc(l);}).join('<br>') : '';
+  const passageHTML = g.passage
+    ? '<div class="tpq-passage"><div class="tpq-passage-label">' + typeLabel + speakBtn + '</div>'
+      + '<div class="tpq-passage-text">' + passageLines + '</div></div>'
+    : '';
+
+  return '<div class="tpq-group">'
+    + '<div class="tpq-group-header">'
+    + '<span class="tpq-part-tag">' + g.qs[0].part + '</span>'
+    + '<span class="tpq-type-tag">' + g.qs[0].type + '</span>'
+    + '</div>'
+    + passageHTML
+    + g.qs.map(function(q,i){ return renderSingleQ(q, g.indices[i], topicId, state, i+1); }).join('')
+    + '</div>';
+}
+
+function renderSingleQ(q, idx, topicId, state, num) {
+  const revealed = state.revealed.has(idx);
+  const chosen   = state.answers[idx];
+  const metaHTML = num ? '' : '<div class="tpq-meta"><span class="tpq-part-tag">' + q.part + '</span><span class="tpq-type-tag">' + q.type + '</span></div>';
+  const prefix   = num ? '<strong>Q' + num + '.</strong> ' : '';
+  const qText    = esc(q.q).split('\n').join('<br>');
+
+  var choicesHTML = '';
+  q.choices.forEach(function(c,ci) {
+    var cls = 'tpq-choice';
     if (revealed) {
-      if (ci === q.ans) cls += ' correct';
-      else if (ci === chosen && ci !== q.ans) cls += ' wrong';
+      if (ci===q.ans) cls += ' correct';
+      else if (ci===chosen && ci!==q.ans) cls += ' wrong';
       else cls += ' locked';
-    } else if (ci === chosen) cls += ' selected';
-    return `<div class="${cls}" onclick="choosePracticeAnswer('${topicId}',${qi},${ci})">${String.fromCharCode(65+ci)}. ${esc(c)}</div>`;
-  }).join('');
-  const explainHTML = revealed
-    ? `<div class="tpq-explain">💡 ${esc(q.explain)}</div>`
-    : `<button class="btn btn-ghost btn-sm tpq-reveal-btn" onclick="revealAnswer('${topicId}',${qi})" ${chosen===undefined?'disabled':''}>查看解析</button>`;
-  return `
-    <div class="tpq-item" id="tpq-${topicId}-${qi}">
-      <div class="tpq-meta"><span class="tpq-part-tag">${q.part}</span><span class="tpq-type-tag">${q.type}</span></div>
-      <div class="tpq-q">${esc(q.q).replace(/\n/g,'<br>')} ${speakBtn}</div>
-      <div class="tpq-choices">${choicesHTML}</div>
-      ${explainHTML}
-    </div>`;
+    } else if (ci===chosen) cls += ' selected';
+    choicesHTML += '<div class="' + cls + '" onclick="choosePracticeAnswer(\'' + topicId + '\',' + idx + ',' + ci + ')">'
+      + String.fromCharCode(65+ci) + '. ' + esc(c) + '</div>';
+  });
+
+  var explainHTML = revealed
+    ? '<div class="tpq-explain">💡 ' + esc(q.explain) + '</div>'
+    : '<button class="btn btn-ghost btn-sm tpq-reveal-btn" onclick="revealAnswer(\'' + topicId + '\',' + idx + ')"'
+      + (chosen===undefined ? ' disabled' : '') + '>查看解析</button>';
+
+  return '<div class="tpq-item" id="tpq-' + topicId + '-' + idx + '">'
+    + metaHTML
+    + '<div class="tpq-q">' + prefix + qText + '</div>'
+    + '<div class="tpq-choices">' + choicesHTML + '</div>'
+    + explainHTML
+    + '</div>';
 }
 
-function choosePracticeAnswer(topicId, qi, ci) {
-  if (!topicPracticeState[topicId]) topicPracticeState[topicId] = { answers:{}, revealed:new Set() };
-  const state = topicPracticeState[topicId];
-  if (state.revealed.has(qi)) return;
-  state.answers[qi] = ci;
-  const item = document.getElementById(`tpq-${topicId}-${qi}`);
-  if (!item) return;
-  const q = (TOPIC_PRACTICE[topicId]||[])[qi];
-  if (!q) return;
-  item.querySelector('.tpq-choices').innerHTML = q.choices.map((c,idx) => {
-    const cls = 'tpq-choice' + (idx===ci ? ' selected' : '');
-    return `<div class="${cls}" onclick="choosePracticeAnswer('${topicId}',${qi},${idx})">${String.fromCharCode(65+idx)}. ${esc(c)}</div>`;
-  }).join('');
-  const btn = item.querySelector('.tpq-reveal-btn');
-  if (btn) btn.disabled = false;
-}
-
-function revealAnswer(topicId, qi) {
-  if (!topicPracticeState[topicId]) return;
-  topicPracticeState[topicId].revealed.add(qi);
-  const q     = (TOPIC_PRACTICE[topicId]||[])[qi];
-  const state = topicPracticeState[topicId];
-  const chosen = state.answers[qi];
-  const item  = document.getElementById(`tpq-${topicId}-${qi}`);
-  if (!item || !q) return;
-  item.querySelector('.tpq-choices').innerHTML = q.choices.map((c,idx) => {
-    let cls = 'tpq-choice locked';
-    if (idx===q.ans) cls += ' correct';
-    else if (idx===chosen) cls += ' wrong';
-    return `<div class="${cls}">${String.fromCharCode(65+idx)}. ${esc(c)}</div>`;
-  }).join('');
-  const btn = item.querySelector('.tpq-reveal-btn');
-  if (btn) {
-    const div = document.createElement('div');
-    div.className = 'tpq-explain';
-    div.textContent = '💡 ' + q.explain;
-    btn.replaceWith(div);
-  }
-}
-
-function resetTopicPractice(topicId) {
-  topicPracticeState[topicId] = { answers:{}, revealed:new Set() };
+function setPracticePartFilter(part, topicId) {
+  window._practicePartFilter = part;
   const t = window.TOPICS_DATA.find(d => d.id === topicId);
   renderTopicPractice(t);
-}
-
-// ── 單字篩選 ──
-function setVocabFilter(f) {
-  window._vocabFilter = f;
-  const t = window.TOPICS_DATA.find(d => d.id === currentTopicId);
-  const prog = topicGoals.topicProgress?.[currentTopicId] || {};
-  renderTopicTabContent(t, prog.vocabDone || []);
 }
