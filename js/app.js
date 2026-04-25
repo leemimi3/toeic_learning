@@ -45,6 +45,7 @@ function goto(id, btn) {
   if (id === 'notes')    renderNotes();
   if (id === 'roots')    renderRoots();
   if (id === 'practice') resetPractice();
+  if (id === 'vocab')    renderVocabPage();
   if (id === 'learn')    renderLearn();
   if (id === 'topics')   renderTopics();
 }

@@ -97,26 +97,45 @@
     <button class="btn btn-gold" onclick="openVocabModal()">＋ 新增單字</button>
   </div>
 
-  <div class="tts-row">
-    <span class="lbl">🔊 朗讀速度</span>
-    <button class="speed-btn" onclick="setSpd(0.7,this)">慢</button>
-    <button class="speed-btn on" onclick="setSpd(1.0,this)">正常</button>
-    <button class="speed-btn" onclick="setSpd(1.4,this)">快</button>
+  <!-- 統計面板 -->
+  <div id="vocabStatsPanel" class="vocab-stats-panel"></div>
+
+  <!-- 主題篩選（橫向捲動） -->
+  <div class="vocab-filter-section">
+    <div class="vfilter-label">主題</div>
+    <div id="vocabTopicBar" class="vocab-topic-bar"></div>
   </div>
 
-  <div class="vocab-toolbar">
-    <input class="inp vocab-search" id="vocabSearch" placeholder="搜尋單字、意思…" oninput="renderVocab()">
-    <select class="inp" style="width:130px" id="vocabFilter" onchange="renderVocab()">
-      <option value="all">全部</option>
-      <option value="0">待學習</option>
-      <option value="1">初學</option>
-      <option value="2">熟悉中</option>
-      <option value="3">已熟練</option>
-    </select>
+  <!-- 詞性 + SRS 篩選 -->
+  <div class="vocab-filter-row">
+    <div class="vfilter-group">
+      <div class="vfilter-label">詞性</div>
+      <div class="vfilter-btns">
+        <button class="vpos-btn active" data-pos="all" onclick="setVocabPos('all')">全部</button>
+        <button class="vpos-btn" data-pos="n." onclick="setVocabPos('n.')">n. 名詞</button>
+        <button class="vpos-btn" data-pos="v." onclick="setVocabPos('v.')">v. 動詞</button>
+        <button class="vpos-btn" data-pos="adj." onclick="setVocabPos('adj.')">adj. 形容詞</button>
+        <button class="vpos-btn" data-pos="adv." onclick="setVocabPos('adv.')">adv. 副詞</button>
+        <button class="vpos-btn" data-pos="phrase" onclick="setVocabPos('phrase')">片語</button>
+      </div>
+    </div>
+    <div class="vfilter-group">
+      <div class="vfilter-label">複習狀態</div>
+      <div class="vfilter-btns">
+        <button class="vsrs-btn active" data-srs="all" onclick="setVocabSrs('all')">全部</button>
+        <button class="vsrs-btn" data-srs="due" onclick="setVocabSrs('due')">今日待複習</button>
+        <button class="vsrs-btn" data-srs="0" onclick="setVocabSrs('0')">Lv.0 待學習</button>
+        <button class="vsrs-btn" data-srs="1" onclick="setVocabSrs('1')">Lv.1 初學</button>
+        <button class="vsrs-btn" data-srs="2" onclick="setVocabSrs('2')">Lv.2 熟悉中</button>
+        <button class="vsrs-btn" data-srs="3" onclick="setVocabSrs('3')">Lv.3+ 熟練</button>
+      </div>
+    </div>
+    <input class="inp vocab-search" id="vocabSearch" placeholder="搜尋單字、意思…" oninput="renderVocab()" style="flex:1;min-width:140px">
   </div>
-  <div class="vocab-table" id="vocabList"></div>
+
+  <div id="vocabList" class="vocab-table"></div>
   <div class="empty-state" id="vocabEmpty" style="display:none">
-    <div class="empty-icon">📚</div>還沒有單字<br>點右上角「新增單字」開始建立！
+    <div class="empty-icon">📚</div>還沒有單字<br>點右上角「新增單字」開始！
   </div>
 </div>
 

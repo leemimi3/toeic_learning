@@ -977,3 +977,91 @@ select.inp { cursor: pointer; }
   .toast { bottom: 10px; max-width: calc(100vw - 20px); white-space: normal; text-align: center; }
   .modal { width: 100%; }
 }
+
+/* ════════════════════
+   單字庫 — 主題分類系統
+════════════════════ */
+/* 統計面板 */
+.vocab-stats-panel {
+  background: var(--card);
+  border: var(--px-border);
+  box-shadow: var(--px-shadow);
+  padding: clamp(10px,2vw,16px);
+  margin-bottom: 14px;
+}
+.vstats-row { display: flex; align-items: center; gap: clamp(12px,2.5vw,24px); flex-wrap: wrap; }
+.vstats-item { display: flex; flex-direction: column; gap: 3px; }
+.vstats-num  { font-family: var(--font-pixel); font-size: var(--text-xl); color: var(--gold); line-height: 1; }
+.vstats-lbl  { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); }
+.vstats-bar-wrap { flex: 1; min-width: 120px; }
+.vstats-bar-label { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); margin-bottom: 5px; }
+.vstats-bar  { height: 14px; background: var(--bg2); border: 2px solid var(--border); }
+.vstats-fill { height: 100%; background: repeating-linear-gradient(90deg,var(--green) 0,var(--green) 7px,#006010 7px,#006010 14px); transition: width .5s steps(8); }
+
+/* 主題篩選橫向捲動 */
+.vocab-filter-section { margin-bottom: 10px; }
+.vfilter-label { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); margin-bottom: 6px; }
+.vocab-topic-bar {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+.vocab-topic-bar::-webkit-scrollbar { height: 6px; }
+.vocab-topic-bar::-webkit-scrollbar-track { background: var(--bg2); }
+.vocab-topic-bar::-webkit-scrollbar-thumb { background: var(--border); }
+
+.vtf-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: var(--px-border);
+  box-shadow: 2px 2px 0 var(--border);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  cursor: pointer;
+  background: var(--card);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .08s;
+}
+.vtf-btn:active { transform: translate(2px,2px); box-shadow: none; }
+.vtf-btn.active { font-weight: 700; }
+.vtf-count { background: var(--bg2); border: 1px solid var(--border); padding: 0 5px; font-size: .65em; min-width: 18px; text-align: center; }
+
+/* 詞性 + SRS 篩選列 */
+.vocab-filter-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
+.vfilter-group { display: flex; flex-direction: column; gap: 5px; }
+.vfilter-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+.vpos-btn, .vsrs-btn {
+  padding: 4px 10px;
+  border: var(--px-border);
+  box-shadow: 2px 2px 0 var(--border);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  cursor: pointer;
+  background: var(--card);
+  transition: all .08s;
+}
+.vpos-btn:active, .vsrs-btn:active { transform: translate(2px,2px); box-shadow: none; }
+.vpos-btn.active { background: var(--blue); color: #fff; border-color: var(--blue2); box-shadow: 2px 2px 0 var(--blue2); }
+.vsrs-btn.active { background: var(--gold); color: #fff; border-color: var(--gold2); box-shadow: 2px 2px 0 var(--gold2); }
+
+/* 主題標籤 in vocab card */
+.vtopic-chip {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: .5rem;
+  padding: 2px 6px;
+  border: 2px solid;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* RWD */
+@media (max-width: 480px) {
+  .vocab-filter-row { flex-direction: column; gap: 8px; }
+  .vstats-row { gap: 10px; }
+}
