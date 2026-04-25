@@ -463,6 +463,7 @@ function renderSingleQ(q, idx, topicId, state, num) {
   const qText    = esc(q.q).split('\n').join('<br>');
 
   var choicesHTML = '';
+  if (!q || !q.choices) return '';
   q.choices.forEach(function(c,ci) {
     var cls = 'tpq-choice';
     if (revealed) {
@@ -491,4 +492,11 @@ function setPracticePartFilter(part, topicId) {
   window._practicePartFilter = part;
   const t = window.TOPICS_DATA.find(d => d.id === topicId);
   renderTopicPractice(t);
+}
+
+function setVocabFilter(f) {
+  window._vocabFilter = f;
+  const t = window.TOPICS_DATA.find(d => d.id === currentTopicId);
+  const prog = topicGoals.topicProgress?.[currentTopicId] || {};
+  renderTopicTabContent(t, prog.vocabDone || []);
 }
