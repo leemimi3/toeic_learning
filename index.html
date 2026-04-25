@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>多益學習系統</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -328,16 +328,19 @@
 
   <div id="modalsContainer"></div>
 <!-- ══ TOPICS PAGE ══ -->
-<div class="page" id="page-topics">
+<div class="page" id="page-topics" style="min-height:calc(100vh - 80px)">
   <div class="section-title">主題學習</div>
   <div class="section-sub">TOEIC TOPIC CATEGORIES · 13 大主題</div>
 
   <!-- 目標進度條 -->
   <div id="topicGoalBar" class="topic-goal-bar"></div>
 
-  <div class="topics-layout">
-    <!-- 左側主題列表 -->
-    <div class="topic-grid" id="topicGrid"></div>
+  <div class="topics-layout" style="min-height:min(680px, calc(100vh - 220px))">
+    <!-- 左側主題列表 — pixel window -->
+    <div class="topic-grid-window">
+      <div class="topic-grid-window-title">📗 TOPICS</div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </div>
     <!-- 右側詳細內容 -->
     <div class="topic-detail-wrap" id="topicDetail">
       <div class="empty-state"><div class="empty-icon">📗</div>選擇左側主題開始學習</div>
