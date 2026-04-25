@@ -29,6 +29,8 @@
   --cyan:      #08b8c8;
   --green:     #18a830;
   --purple:    #8830d8;
+  --pink:      #e8409a;
+  --cyan:      #08c8d8;
   --red:       #d81820;
   --yellow:    #f0c800;
 
@@ -979,8 +981,9 @@ select.inp { cursor: pointer; }
 }
 
 /* ════════════════════
-   單字庫 — 主題分類系統
+   單字庫 — 主題分類系統 (Y2K 亮色重設計)
 ════════════════════ */
+
 /* 統計面板 */
 .vocab-stats-panel {
   background: var(--card);
@@ -989,76 +992,112 @@ select.inp { cursor: pointer; }
   padding: clamp(10px,2vw,16px);
   margin-bottom: 14px;
 }
-.vstats-row { display: flex; align-items: center; gap: clamp(12px,2.5vw,24px); flex-wrap: wrap; }
-.vstats-item { display: flex; flex-direction: column; gap: 3px; }
-.vstats-num  { font-family: var(--font-pixel); font-size: var(--text-xl); color: var(--gold); line-height: 1; }
-.vstats-lbl  { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); }
-.vstats-bar-wrap { flex: 1; min-width: 120px; }
-.vstats-bar-label { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); margin-bottom: 5px; }
-.vstats-bar  { height: 14px; background: var(--bg2); border: 2px solid var(--border); }
-.vstats-fill { height: 100%; background: repeating-linear-gradient(90deg,var(--green) 0,var(--green) 7px,#006010 7px,#006010 14px); transition: width .5s steps(8); }
+.vstats-row  { display:flex; align-items:center; gap:clamp(10px,2vw,20px); flex-wrap:wrap; }
+.vstats-item { display:flex; flex-direction:column; gap:3px; }
+.vstats-num  { font-family:var(--font-pixel); font-size:var(--text-xl); color:var(--gold); line-height:1; }
+.vstats-lbl  { font-family:var(--font-pixel); font-size:var(--text-xxs); color:var(--muted); }
+.vstats-bar-wrap  { flex:1; min-width:120px; }
+.vstats-bar-label { font-family:var(--font-pixel); font-size:var(--text-xxs); color:var(--muted); margin-bottom:5px; }
+.vstats-bar  { height:14px; background:var(--bg2); border:2px solid var(--border); }
+.vstats-fill { height:100%; background:repeating-linear-gradient(90deg,var(--green) 0,var(--green) 7px,#006010 7px,#006010 14px); transition:width .5s steps(8); }
 
-/* 主題篩選橫向捲動 */
-.vocab-filter-section { margin-bottom: 10px; }
-.vfilter-label { font-family: var(--font-pixel); font-size: var(--text-xxs); color: var(--muted); margin-bottom: 6px; }
+/* ── 主題篩選 — 大色塊卡片風格 ── */
+.vocab-filter-section { margin-bottom:12px; }
+.vfilter-label {
+  font-family:var(--font-pixel); font-size:var(--text-xxs);
+  color:var(--muted); margin-bottom:8px; letter-spacing:.06em;
+}
+
 .vocab-topic-bar {
-  display: flex;
-  gap: 5px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: thin;
+  display:flex; gap:6px;
+  overflow-x:auto; padding-bottom:6px;
+  scrollbar-width:thin;
 }
-.vocab-topic-bar::-webkit-scrollbar { height: 6px; }
-.vocab-topic-bar::-webkit-scrollbar-track { background: var(--bg2); }
-.vocab-topic-bar::-webkit-scrollbar-thumb { background: var(--border); }
+.vocab-topic-bar::-webkit-scrollbar       { height:6px; }
+.vocab-topic-bar::-webkit-scrollbar-track { background:var(--bg2); border:1px solid var(--border); }
+.vocab-topic-bar::-webkit-scrollbar-thumb { background:var(--border); }
 
+/* 主題按鈕 — 像 Y2K app icon */
 .vtf-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border: var(--px-border);
-  box-shadow: 2px 2px 0 var(--border);
-  font-family: var(--font-pixel);
-  font-size: var(--text-xxs);
-  cursor: pointer;
-  background: var(--card);
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all .08s;
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; padding:8px 12px;
+  border:2px solid var(--border);
+  box-shadow:3px 3px 0 var(--border);
+  font-family:var(--font-pixel); font-size:var(--text-xxs);
+  cursor:pointer; background:var(--card);
+  color:var(--text2);
+  white-space:nowrap; flex-shrink:0;
+  transition:all .08s; min-width:60px;
+  line-height:1.4; text-align:center;
 }
-.vtf-btn:active { transform: translate(2px,2px); box-shadow: none; }
-.vtf-btn.active { font-weight: 700; }
-.vtf-count { background: var(--bg2); border: 1px solid var(--border); padding: 0 5px; font-size: .65em; min-width: 18px; text-align: center; }
+.vtf-btn:hover  { background:var(--bg2); }
+.vtf-btn:active { transform:translate(3px,3px); box-shadow:none; }
+.vtf-btn.active { box-shadow:3px 3px 0 currentColor; }
+.vtf-icon { font-size:1.25rem; line-height:1; }
+.vtf-name { font-size:.52rem; letter-spacing:.02em; color:inherit; }
+.vtf-count {
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
+  padding:1px 5px; font-size:.52rem; border-radius:0;
+  font-family:var(--font-pixel); min-width:18px; text-align:center;
+  color:var(--muted);
+}
+.vtf-btn.active .vtf-count { background:rgba(255,255,255,.2); color:inherit; }
 
 /* 詞性 + SRS 篩選列 */
-.vocab-filter-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
-.vfilter-group { display: flex; flex-direction: column; gap: 5px; }
-.vfilter-btns { display: flex; gap: 4px; flex-wrap: wrap; }
-.vpos-btn, .vsrs-btn {
-  padding: 4px 10px;
-  border: var(--px-border);
-  box-shadow: 2px 2px 0 var(--border);
-  font-family: var(--font-pixel);
-  font-size: var(--text-xxs);
-  cursor: pointer;
-  background: var(--card);
-  transition: all .08s;
+.vocab-filter-row {
+  display:flex; gap:10px; margin-bottom:14px;
+  flex-wrap:wrap; align-items:flex-end;
+  background:var(--card); border:var(--px-border);
+  box-shadow:var(--px-shadow);
+  padding:10px 14px;
 }
-.vpos-btn:active, .vsrs-btn:active { transform: translate(2px,2px); box-shadow: none; }
-.vpos-btn.active { background: var(--blue); color: #fff; border-color: var(--blue2); box-shadow: 2px 2px 0 var(--blue2); }
-.vsrs-btn.active { background: var(--gold); color: #fff; border-color: var(--gold2); box-shadow: 2px 2px 0 var(--gold2); }
+.vfilter-label { color:var(--text2); }
+.vfilter-group { display:flex; flex-direction:column; gap:5px; }
+.vfilter-btns  { display:flex; gap:4px; flex-wrap:wrap; }
+
+.vpos-btn, .vsrs-btn {
+  padding:5px 11px; border:2px solid var(--border);
+  box-shadow:2px 2px 0 var(--border);
+  font-family:var(--font-pixel); font-size:var(--text-xxs);
+  cursor:pointer; background:var(--surface);
+  color:var(--text2);
+  transition:all .08s; letter-spacing:.02em;
+}
+.vpos-btn:hover, .vsrs-btn:hover { background:var(--bg2); color:var(--text); }
+.vpos-btn:active, .vsrs-btn:active { transform:translate(2px,2px); box-shadow:none; }
+.vpos-btn.active {
+  background:var(--pink); color:#fff;
+  border-color:#a00070; box-shadow:2px 2px 0 #a00070;
+}
+.vsrs-btn.active {
+  background:var(--gold); color:#fff;
+  border-color:var(--gold2); box-shadow:2px 2px 0 var(--gold2);
+}
 
 /* 主題標籤 in vocab card */
 .vtopic-chip {
-  display: inline-block;
-  font-family: var(--font-pixel);
-  font-size: .5rem;
-  padding: 2px 6px;
-  border: 2px solid;
-  margin-top: 4px;
-  line-height: 1.5;
+  display:inline-flex; align-items:center; gap:3px;
+  font-family:var(--font-pixel); font-size:.55rem;
+  padding:2px 7px; border:2px solid;
+  margin-top:5px; line-height:1.5;
 }
+
+/* Select 元素 Y2K 美化 */
+#v-topic {
+  background:var(--card);
+  border:var(--px-border);
+  box-shadow:inset 2px 2px 0 rgba(0,0,0,.1);
+  padding:clamp(8px,1.5vw,11px) clamp(10px,2vw,14px);
+  font-family:var(--font-body);
+  font-size:var(--text-base);
+  cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%232a1a0a'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:34px;
+}
+#v-topic:focus { box-shadow:inset 2px 2px 0 rgba(0,0,0,.15), 0 0 0 2px var(--blue); }
 
 /* RWD */
 @media (max-width: 480px) {

@@ -91,19 +91,35 @@ function renderVocabFilters() {
   const topicBar = document.getElementById('vocabTopicBar');
   if (!topicBar) return;
 
-  // 主題篩選
-  const allCount = stats['all'].total;
-  topicBar.innerHTML = `
-    <button class="vtf-btn ${vocabTopicFilter==='all'?'active':''}"
-      onclick="setVocabTopic('all')" style="${vocabTopicFilter==='all'?'border-color:var(--gold);color:var(--gold)':''}">
-      全部 <span class="vtf-count">${allCount}</span>
-    </button>
-    ${VOCAB_TOPICS.filter(t => (stats[t.id]?.total||0)>0).map(t=>`
-      <button class="vtf-btn ${vocabTopicFilter===t.id?'active':''}"
-        onclick="setVocabTopic('${t.id}')"
-        style="${vocabTopicFilter===t.id?`border-color:${t.color};color:${t.color}`:''}">
-        ${t.label} <span class="vtf-count">${stats[t.id]?.total||0}</span>
-      </button>`).join('')}`;
+  // 全部按鈕
+  const allAct = vocabTopicFilter==='all';
+  const allStyle = allAct ? 'border-color:var(--gold);color:var(--gold);background:rgba(232,132,10,.1)' : '';
+  const allShadow = allAct ? 'box-shadow:3px 3px 0 var(--gold2)' : '';
+  let html = `<button class="vtf-btn ${allAct?'active':''}" onclick="setVocabTopic('all')" style="${allStyle};${allShadow}">
+    <span class="vtf-icon">📚</span>
+    <span class="vtf-name">全部</span>
+    <span class="vtf-count">${stats['all'].total}</span>
+  </button>`;
+
+  // 各主題按鈕（只顯示有單字的）
+  VOCAB_TOPICS.forEach(t => {
+    const cnt = stats[t.id]?.total || 0;
+    if (cnt === 0) return;
+    const act = vocabTopicFilter === t.id;
+    const icon = t.label.split(' ')[0]; // emoji
+    const name = t.label.replace(/^\S+\s*/, '').split(' ')[0]; // first english word
+    const s = act ? `border-color:${t.color};color:${t.color};background:${t.color}18;box-shadow:3px 3px 0 ${t.color}` : '';
+    html += `<button class="vtf-btn ${act?'active':''}" onclick="setVocabTopic('${t.id}')" style="${s}">
+      <span class="vtf-icon">${icon}</span>
+      <span class="vtf-name">${name}</span>
+      <span class="vtf-count">${cnt}</span>
+    </button>`;
+  });
+
+  topicBar.innerHTML = html;
+
+  // Also update stats
+  renderVocabStats();
 }
 
 function setVocabTopic(id) {
@@ -279,7 +295,7 @@ function renderVocabStats() {
   const stats = getVocabStats();
   const cur   = vocabTopicFilter==='all' ? stats['all'] : (stats[vocabTopicFilter]||{total:0,due:0,learned:0});
   const topicObj = VOCAB_TOPICS.find(t=>t.id===vocabTopicFilter);
-  const label = vocabTopicFilter==='all' ? '全部單字' : (topicObj?.label||'');
+  const label = vocabTopicFilter==='all' ? '全部單字' : (topicObj?.label.replace(/^\S+\s*/,'').replace(/_/g,' ')||'');
 
   const pct = cur.total ? Math.round((cur.learned/cur.total)*100) : 0;
   panel.innerHTML = `
