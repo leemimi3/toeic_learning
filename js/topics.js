@@ -320,7 +320,31 @@ let topicPracticeState = {};
 function renderTopicPractice(t) {
   const el = document.getElementById('topicTabContent');
   if (!el) return;
-  const qs = (window.TOPIC_PRACTICE || {})[t.id] || [];
+  // Normalize: flatten qs:[] nested structure into flat array
+  const rawQs = (window.TOPIC_PRACTICE || {})[t.id] || [];
+  const qs = [];
+  rawQs.forEach(function(item) {
+    if (item.qs && Array.isArray(item.qs)) {
+      // Group structure: { part, type, groupId, passage, qs:[...] }
+      item.qs.forEach(function(subQ) {
+        qs.push(Object.assign({}, subQ, {
+          part: item.part,
+          type: item.type,
+          groupId: item.groupId,
+          passage: item.passage, // only first gets passage, rest get undefined
+          _isFirstInGroup: subQ === item.qs[0]
+        }));
+      });
+      // Fix: only first question carries passage
+      const baseIdx = qs.length - item.qs.length;
+      for (let i = baseIdx + 1; i < qs.length; i++) {
+        delete qs[i].passage;
+      }
+    } else {
+      // Flat structure: { part, type, q, choices, ans, explain }
+      qs.push(item);
+    }
+  });
   if (!qs.length) {
     el.innerHTML = '<div class="empty-state" style="padding:40px"><div class="empty-icon">🚧</div>練習題準備中</div>';
     return;
@@ -336,14 +360,26 @@ function renderTopicPractice(t) {
   // Group questions by groupId (passage sharing)
   const groups = [];
   const seen = new Set();
-  filtered.forEach((q, qi) => {
+  filtered.forEach((q) => {
     const realIdx = qs.indexOf(q);
     if (q.groupId) {
       if (!seen.has(q.groupId)) {
         seen.add(q.groupId);
-        const groupQs = filtered.filter(x => x.groupId === q.groupId);
-        groups.push({ type:'group', groupId:q.groupId, passage:q.passage, qs:groupQs,
-          indices:groupQs.map(x=>qs.indexOf(x)) });
+        // Get ALL questions in this group from full qs (not just filtered)
+        const allGroupQs = qs.filter(x => x.groupId === q.groupId);
+        // Get the passage from whichever question has it
+        const passageSource = allGroupQs.find(x => x.passage) || allGroupQs[0];
+        // Only show questions that match current filter
+        const visibleQs = filtered.filter(x => x.groupId === q.groupId);
+        if (visibleQs.length > 0) {
+          groups.push({
+            type: 'group',
+            groupId: q.groupId,
+            passage: passageSource.passage,
+            qs: visibleQs,
+            indices: visibleQs.map(x => qs.indexOf(x))
+          });
+        }
       }
     } else {
       groups.push({ type:'single', q, idx:realIdx });
