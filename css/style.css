@@ -1104,3 +1104,103 @@ select.inp { cursor: pointer; }
   .vocab-filter-row { flex-direction: column; gap: 8px; }
   .vstats-row { gap: 10px; }
 }
+
+/* ════════════════════
+   片語庫 PHRASES
+════════════════════ */
+.phrase-card {
+  background: var(--card);
+  border: var(--px-border);
+  box-shadow: var(--px-shadow);
+  padding: clamp(10px,2vw,14px);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all .08s;
+}
+.phrase-card:hover { box-shadow: 4px 4px 0 var(--border); transform: translate(-1px,-1px); }
+
+.phrase-card-left {
+  flex-shrink: 0;
+  min-width: clamp(130px,22vw,180px);
+  border-left: 4px solid var(--gold);
+  padding-left: 10px;
+}
+.phrase-phrase  { font-family:var(--font-pixel); font-size:var(--text-xs); color:var(--text); line-height:1.6; }
+.phrase-meaning { font-size:var(--text-sm); color:var(--gold); font-weight:700; margin:4px 0; }
+.phrase-cat-chip {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: .52rem;
+  padding: 2px 7px;
+  border: 2px solid;
+  margin-top: 4px;
+}
+
+.phrase-card-body { flex: 1; min-width: 0; }
+.phrase-example { font-family:var(--font-mono); font-size:var(--text-sm); color:var(--text2); font-style:italic; line-height:1.7; }
+.phrase-note    { font-size:var(--text-sm); color:var(--purple); margin-top:5px; }
+
+.phrase-card-meta {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 6px; flex-shrink: 0;
+}
+.phrase-srs-row { display: flex; gap: 5px; margin-top: 2px; }
+.ph-srs-btn {
+  padding: 4px 10px;
+  border: var(--px-border);
+  box-shadow: 2px 2px 0 var(--border);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  cursor: pointer;
+  transition: all .08s;
+}
+.ph-srs-btn:active { transform: translate(2px,2px); box-shadow: none; }
+.ph-srs-btn.bad  { background:var(--red-bg);   color:var(--red);   border-color:var(--red); }
+.ph-srs-btn.good { background:var(--green-bg); color:var(--green); border-color:var(--green); }
+
+.phrase-sub-group { margin-bottom: 16px; }
+.phrase-sub-label {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  color: var(--blue);
+  letter-spacing: .08em;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: var(--px-border);
+  box-shadow: var(--px-shadow);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+/* Mode toggle */
+.ph-mode-btn {
+  padding: 5px 13px;
+  border: var(--px-border);
+  box-shadow: var(--px-shadow);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--muted);
+  transition: all .08s;
+}
+.ph-mode-btn:active { transform: translate(3px,3px); box-shadow: none; }
+.ph-mode-btn.on { background: var(--blue); color: #fff; border-color: var(--blue2); box-shadow: var(--px-shadow); }
+
+/* Card flip mode */
+.ph-card-flip { margin-bottom: 16px; cursor: pointer; }
+.ph-card-inner {
+  width: 100%;
+  height: clamp(180px,38vw,230px);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+}
+.ph-card-inner.flipped { transform: rotateY(180deg); }
+
+@media (max-width: 480px) {
+  .phrase-card { flex-direction: column; gap: 8px; }
+  .phrase-card-left { min-width: unset; width: 100%; }
+  .phrase-card-meta { flex-direction: row; flex-wrap: wrap; justify-content: space-between; width: 100%; }
+}

@@ -20,6 +20,7 @@ const SRS_INTERVALS = {
 };
 
 // ── 持久化 ──
+if (!window.appState) window.appState = {};
 function persist() {
   localStorage.setItem('tv-vocab',    JSON.stringify(vocab));
   localStorage.setItem('tv-notes',    JSON.stringify(notes));
@@ -48,6 +49,7 @@ function goto(id, btn) {
   if (id === 'vocab')    renderVocabPage();
   if (id === 'learn')    renderLearn();
   if (id === 'topics')   renderTopics();
+  if (id === 'phrases')  renderPhrases();
 }
 
 // ── TTS (Text-to-Speech) ──
