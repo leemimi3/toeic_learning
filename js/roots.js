@@ -15,7 +15,7 @@ const ROOT_CATEGORIES = {
 };
 
 let selectedRoot    = null;
-let rootMode        = 'home';   // home | list | card
+let rootMode        = 'list';   // home | list | card
 let rfcOrder        = [];
 let rfcIdx          = 0;
 let rfcCategory     = 'all';
@@ -68,8 +68,6 @@ function renderRootsHome() {
 }
 
 function switchToListMode(catId) {
-  rootMode = 'list';
-  // Show only selected category expanded
   expandedCats.clear();
   if (catId) expandedCats.add(catId);
   setRootMode('list');
@@ -83,15 +81,12 @@ function setRootMode(mode) {
   document.querySelectorAll('.root-mode-btn').forEach(b =>
     b.classList.toggle('on', b.dataset.mode === mode));
 
-  const homeWrap = document.getElementById('rootsHomeWrap');
   const listWrap = document.getElementById('rootsListWrap');
   const cardWrap = document.getElementById('rootsCardWrap');
 
-  if (homeWrap) homeWrap.style.display = mode === 'home' ? 'block' : 'none';
   if (listWrap) listWrap.style.display = mode === 'list' ? 'block' : 'none';
   if (cardWrap) cardWrap.classList.toggle('show', mode === 'card');
 
-  if (mode === 'home') renderRootsHome();
   if (mode === 'list') renderRoots();
   if (mode === 'card') { rfcBuildOrder(); rfcShow(); }
 }
@@ -109,6 +104,22 @@ function renderRoots() {
   const ROOTS  = window.ROOTS || [];
   const listEl = document.getElementById('rootsList');
   if (!listEl) return;
+
+  // 積木圖 banner（每次渲染時確保存在）
+  const bannerEl = document.getElementById('rootsBanner');
+  if (!bannerEl) {
+    const listWrap = document.getElementById('rootsListWrap');
+    if (listWrap) {
+      const banner = document.createElement('div');
+      banner.id = 'rootsBanner';
+      banner.className = 'roots-hero';
+      banner.innerHTML = `
+        <img src="img/word-building.png" alt="單字積木結構" class="roots-hero-img"
+             onerror="this.parentElement.style.display='none'">
+        <div class="roots-hero-caption">Prefix 字首 × Root 字根 × Suffix 字尾 = 單字積木系統</div>`;
+      listWrap.insertBefore(banner, listWrap.firstChild);
+    }
+  }
 
   listEl.innerHTML = Object.entries(ROOT_CATEGORIES).map(([catId, cat]) => {
     const items = ROOTS.filter(r => r.category === catId);
@@ -160,22 +171,58 @@ function showRoot(id) {
 
   const det = document.getElementById('rootDetail');
   if (!det) return;
+
+  // ── 例字列表 ──
+  const wordsHTML = r.words.map(w => `
+    <div class="root-word-row">
+      <div class="rw-word">
+        ${hlWord(w.w, w.hl, cat.color)}
+        <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${w.w}">🔊</button>
+      </div>
+      <div class="rw-meaning">${esc(w.meaning)}</div>
+    </div>`).join('');
+
+  // ── 例句 ──
+  const sentHTML = r.sentences ? r.sentences.filter(Boolean).map(s => `
+    <div class="rd-sentence">
+      ${esc(s)}
+      <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${esc(s)}">🔊</button>
+    </div>`).join('') : '';
+
   det.innerHTML = `
-    <div class="root-detail-badge" style="border-color:${cat.color};color:${cat.color}">${cat.icon} ${cat.label}</div>
-    <div class="root-detail-name" style="color:${cat.color}">${r.name}</div>
-    <div class="root-detail-meaning">意義：${esc(r.meaning)}</div>
-    <div class="root-detail-origin">來源：${esc(r.origin)}</div>
-    <div class="root-words">
-      ${r.words.map(w => `
-        <div class="root-word-row">
-          <div class="rw-word">
-            ${hlWord(w.w, w.hl, cat.color)}
-            <button class="speak-btn-sm" onclick="learnSpeak(this)" data-text="${w.w}">🔊</button>
-          </div>
-          <div class="rw-meaning">${esc(w.meaning)}</div>
-        </div>`).join('')}
+    <div class="rd-scroll">
+      <div class="rd-header" style="border-left:4px solid ${cat.color}">
+        <div class="root-detail-badge" style="border-color:${cat.color};color:${cat.color}">${cat.icon} ${cat.label}</div>
+        <div class="root-detail-name" style="color:${cat.color}">${r.name}</div>
+        <div class="root-detail-meaning">💡 意義：${esc(r.meaning)}</div>
+        <div class="root-detail-origin">🏛 來源：${esc(r.origin)}</div>
+      </div>
+
+      ${r.tip ? `
+      <div class="rd-section">
+        <div class="rd-section-title" style="color:var(--purple)">🧠 記憶口訣</div>
+        <div class="rd-tip">${esc(r.tip)}</div>
+      </div>` : ''}
+
+      <div class="rd-section">
+        <div class="rd-section-title" style="color:${cat.color}">📚 核心例字（字根高亮）</div>
+        <div class="root-words">${wordsHTML}</div>
+      </div>
+
+      ${sentHTML ? `
+      <div class="rd-section">
+        <div class="rd-section-title" style="color:var(--blue)">✏️ 考試例句</div>
+        <div class="rd-sentences">${sentHTML}</div>
+      </div>` : ''}
+
+      ${r.exam ? `
+      <div class="rd-section">
+        <div class="rd-section-title" style="color:var(--gold)">🎯 考試重點</div>
+        <div class="rd-exam">${esc(r.exam)}</div>
+      </div>` : ''}
     </div>`;
 }
+
 
 function hlWord(word, hl, color) {
   const i = word.toLowerCase().indexOf(hl.toLowerCase());

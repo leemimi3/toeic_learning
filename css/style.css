@@ -1233,9 +1233,9 @@ select.inp { cursor: pointer; }
 }
 .roots-hero-img {
   width: 100%;
-  max-height: 320px;
-  object-fit: cover;
+  height: auto;
   display: block;
+  max-width: 100%;
 }
 .roots-hero-caption {
   font-family: var(--font-pixel);
@@ -1383,4 +1383,58 @@ select.inp { cursor: pointer; }
   .roots-home-grid { grid-template-columns: 1fr 1fr; }
   .roots-hero-img  { max-height: 180px; }
   .rhs-item        { min-width: 60px; }
+}
+
+/* ════════════════════
+   字根詳細學習內容
+════════════════════ */
+.rd-scroll { overflow-y: auto; max-height: calc(100vh - 180px); }
+.rd-header {
+  padding: clamp(14px,2.5vw,20px);
+  border-bottom: 2px solid var(--border);
+  background: var(--surface);
+}
+.rd-section {
+  padding: clamp(12px,2.5vw,18px);
+  border-bottom: 2px solid var(--border);
+}
+.rd-section:last-child { border-bottom: none; }
+.rd-section-title {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xxs);
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+.rd-tip {
+  font-size: var(--text-base);
+  color: var(--text);
+  background: rgba(155,127,232,.08);
+  border: 2px solid rgba(155,127,232,.25);
+  border-left: 4px solid var(--purple);
+  padding: 10px 14px;
+  line-height: 1.75;
+}
+.rd-sentences { display: flex; flex-direction: column; gap: 7px; }
+.rd-sentence {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text2);
+  background: var(--blue-bg);
+  border: 2px solid rgba(91,143,212,.25);
+  border-left: 4px solid var(--blue);
+  padding: 9px 13px;
+  line-height: 1.7;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rd-exam {
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: var(--gold-bg);
+  border: 2px solid rgba(232,132,10,.25);
+  border-left: 4px solid var(--gold);
+  padding: 10px 14px;
+  line-height: 1.75;
 }

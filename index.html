@@ -237,17 +237,13 @@
       <div class="section-sub">WORD BUILDING SYSTEM · 88 核心字根字首</div>
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;">
-      <button class="root-mode-btn on" data-mode="home" onclick="setRootMode('home')">🏠 首頁</button>
-      <button class="root-mode-btn" data-mode="list" onclick="setRootMode('list')">☰ 列表</button>
+      <button class="root-mode-btn on" data-mode="list" onclick="setRootMode('list')">☰ 列表</button>
       <button class="root-mode-btn" data-mode="card" onclick="setRootMode('card')">⬛ 卡片</button>
     </div>
   </div>
 
-  <!-- 首頁 -->
-  <div id="rootsHomeWrap"></div>
-
-  <!-- 列表模式 -->
-  <div id="rootsListWrap" style="display:none">
+  <!-- 列表模式（預設顯示） -->
+  <div id="rootsListWrap">
     <div class="roots-layout">
       <div>
         <div class="px-window-title" style="margin-bottom:0;border:2px solid var(--border);border-bottom:none;padding:6px 12px;">
@@ -302,6 +298,196 @@
     <div class="rfc-wordlist">
       <div class="rfc-wordlist-hdr">例字列表</div>
       <div id="rfcWordlistBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTES ══ -->
+<div class="page" id="page-notes">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+    <div><div class="section-title">學習筆記</div><div class="section-sub">STUDY NOTES</div></div>
+    <button class="btn btn-gold" onclick="openNoteModal()">＋ 新增筆記</button>
+  </div>
+  <div class="tts-row" style="margin-bottom:10px;">
+    <span class="lbl">速度：</span>
+    <button class="speed-btn on" onclick="setSpd(1.0,this)">正常</button>
+    <button class="speed-btn" onclick="setSpd(0.75,this)">0.75x</button>
+    <button class="speed-btn" onclick="setSpd(0.6,this)">慢速</button>
+  </div>
+  <div class="filter-row-label">Part 篩選</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;" id="notePartFilters">
+    <button class="btn btn-ghost btn-sm on" onclick="setNoteFilter('all',this)">全部</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p1',this)">Part 1 <span class="part-sub">圖片</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p2',this)">Part 2 <span class="part-sub">應答</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p3',this)">Part 3 <span class="part-sub">對話</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p4',this)">Part 4 <span class="part-sub">獨白</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p5',this)">Part 5 <span class="part-sub">填空</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p6',this)">Part 6 <span class="part-sub">短文</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('p7',this)">Part 7 <span class="part-sub">閱讀</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('grammar',this)">文法</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('vocab',this)">單字</button>
+    <button class="btn btn-ghost btn-sm" onclick="setNoteFilter('strategy',this)">策略</button>
+  </div>
+  <div class="notes-list" id="notesList"></div>
+  <div class="empty-state" id="notesEmpty" style="display:none"><div class="empty-icon">📝</div>還沒有筆記</div>
+</div>
+
+<!-- ══ LEARN ══ -->
+<div class="page" id="page-learn">
+  <div class="section-title">學習區</div>
+  <div class="section-sub">TOEIC PART STRATEGIES</div>
+  <div class="learn-layout">
+    <div class="learn-nav-wrap">
+      <div class="learn-nav-label">選擇 Part</div>
+      <div class="learn-nav" id="learnNav"></div>
+    </div>
+    <div class="learn-body" id="learnBody">
+      <div class="empty-state"><div class="empty-icon">📖</div>選擇左側 Part 開始學習</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOPICS ══ -->
+<div class="page" id="page-topics">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+    <div><div class="section-title">主題學習</div><div class="section-sub">TOEIC TOPIC CATEGORIES · 13 大主題</div></div>
+  </div>
+  <div id="topicGoalBar" class="topic-goal-bar"></div>
+  <div class="topics-layout" style="min-height:min(680px,calc(100vh - 220px))">
+    <div class="topic-grid-window">
+      <div class="topic-grid-window-title">📗 TOPICS</div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </div>
+    <div class="topic-detail-wrap" id="topicDetail">
+      <div class="empty-state"><div class="empty-icon">📗</div>選擇左側主題開始學習</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOPIC GOAL MODAL ══ -->
+<div class="overlay" id="ovTopicGoal" onclick="ovClose(event,'ovTopicGoal')">
+  <div class="modal">
+    <div class="modal-header">
+      <span>🎯 設定學習目標</span>
+      <button class="modal-close" onclick="closeOv('ovTopicGoal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">📅 考試目標日期</label>
+        <input class="inp" type="date" id="tg-exam-date">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">每週完成主題數</label>
+          <select class="inp" id="tg-weekly-topics">
+            <option value="1">1 個主題</option>
+            <option value="2" selected>2 個主題</option>
+            <option value="3">3 個主題</option>
+            <option value="4">4 個主題</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">每日學習單字數</label>
+          <select class="inp" id="tg-daily-vocab">
+            <option value="3">3 個</option>
+            <option value="5" selected>5 個</option>
+            <option value="10">10 個</option>
+            <option value="15">15 個</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">每日筆記目標</label>
+        <select class="inp" id="tg-daily-notes">
+          <option value="1">1 則</option>
+          <option value="2" selected>2 則</option>
+          <option value="3">3 則</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovTopicGoal')">取消</button>
+      <button class="btn btn-gold" onclick="saveTopicGoalSettings()">儲存目標</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PHRASES ══ -->
+<div class="page" id="page-phrases">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+    <div><div class="section-title">片語庫</div><div class="section-sub">TOEIC CORE PHRASES · 113 核心片語</div></div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <button class="ph-mode-btn on" data-mode="list" onclick="setPhraseViewMode('list')">☰ 列表</button>
+      <button class="ph-mode-btn" data-mode="card" onclick="setPhraseViewMode('card')">⬛ 卡片</button>
+      <button class="btn btn-gold" onclick="openPhraseModal()">＋ 新增片語</button>
+    </div>
+  </div>
+  <div id="phraseStatsPanel" class="vocab-stats-panel"></div>
+  <div class="vocab-filter-section">
+    <div class="vfilter-label">分類</div>
+    <div id="phraseCatBar" class="vocab-topic-bar"></div>
+  </div>
+  <div class="vocab-filter-row">
+    <div class="vfilter-group">
+      <div class="vfilter-label">複習狀態</div>
+      <div class="vfilter-btns">
+        <button class="phsrs-btn vsrs-btn active" data-srs="all" onclick="setPhraseSrs('all')">全部</button>
+        <button class="phsrs-btn vsrs-btn" data-srs="due" onclick="setPhraseSrs('due')">今日待複習</button>
+        <button class="phsrs-btn vsrs-btn" data-srs="0" onclick="setPhraseSrs('0')">Lv.0 待學習</button>
+        <button class="phsrs-btn vsrs-btn" data-srs="1" onclick="setPhraseSrs('1')">Lv.1 初學</button>
+        <button class="phsrs-btn vsrs-btn" data-srs="2" onclick="setPhraseSrs('2')">Lv.2 熟悉中</button>
+        <button class="phsrs-btn vsrs-btn" data-srs="3" onclick="setPhraseSrs('3')">Lv.3+ 熟練</button>
+      </div>
+    </div>
+    <input class="inp" id="phraseSearchInput" placeholder="搜尋片語、意思…"
+      oninput="phraseSearch=this.value;renderPhrases()" style="flex:1;min-width:140px">
+  </div>
+  <div id="phraseList" style="display:flex;flex-direction:column;gap:8px;"></div>
+  <div id="phraseCardWrap" style="display:none;max-width:520px;margin:0 auto;"></div>
+  <div class="empty-state" id="phraseEmpty" style="display:none">
+    <div class="empty-icon">📎</div>沒有符合條件的片語
+  </div>
+</div>
+
+<!-- ══ PHRASE MODAL ══ -->
+<div class="overlay" id="ovPhrase" onclick="ovClose(event,'ovPhrase')">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="phraseModalTitle">新增片語</span>
+      <button class="modal-close" onclick="closeOv('ovPhrase')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">英文片語 *</label>
+        <input class="inp" id="ph-phrase" placeholder="例：follow up on">
+      </div>
+      <div class="form-group">
+        <label class="form-label">中文意思 *</label>
+        <input class="inp" id="ph-meaning" placeholder="例：跟進">
+      </div>
+      <div class="form-group">
+        <label class="form-label">分類</label>
+        <select class="inp" id="ph-cat">
+          <option value="part1">🖼️ Part 1 圖片題</option>
+          <option value="office">🏢 辦公室商務</option>
+          <option value="travel">✈️ 差旅物流客服</option>
+          <option value="finance">💰 財務科技設施</option>
+          <option value="grammar">📝 介系詞職場動作</option>
+          <option value="custom">⭐ 自訂片語</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">例句（英文）</label>
+        <input class="inp" id="ph-example" placeholder="例：I'll follow up on your request.">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備註 / 記憶口訣</label>
+        <input class="inp" id="ph-note" placeholder="例：follow up = 跟在後面追→跟進">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ovPhrase')">取消</button>
+      <button class="btn btn-gold" onclick="savePhrase()">儲存片語</button>
     </div>
   </div>
 </div>
