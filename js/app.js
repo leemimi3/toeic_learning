@@ -44,7 +44,7 @@ function goto(id, btn) {
   if (id === 'dash')     renderDash();
   if (id === 'vocab')    renderVocab();
   if (id === 'notes')    renderNotes();
-  if (id === 'roots')    renderRoots();
+  if (id === 'roots') { setRootMode('home'); return; } if (id === 'roots_NEVER')    renderRoots();
   if (id === 'practice') resetPractice();
   if (id === 'vocab')    renderVocabPage();
   if (id === 'learn')    renderLearn();
