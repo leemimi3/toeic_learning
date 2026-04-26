@@ -306,4 +306,27 @@
   </div>
 </div>
 
->
+  <div id="modalsContainer"></div>
+
+  <!-- Modal loader -->
+  <script>
+  fetch("modals.html").then(r=>r.text()).then(h=>{document.getElementById("modalsContainer").innerHTML=h;});
+  </script>
+
+  <!-- JS 資料 → 功能模組 → 主程式 -->
+  <script src="js/phrases-data.js"></script>
+  <script src="js/topics-data.js"></script>
+  <script src="js/topics-practice.js"></script>
+  <script src="data/roots-data.js"></script>
+  <script src="js/roots.js"></script>
+  <script src="js/vocab.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/practice.js"></script>
+  <script src="js/backup.js"></script>
+  <script src="js/learn.js"></script>
+  <script src="js/phrases.js"></script>
+  <script src="js/topics.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
